@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>HARD RIZZ INCOMING</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bungee+Shade&family=Monoton&family=Rubik+Glitch&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; }
+  body {
+    background: #000;
+    color: #fff;
+    font-family: "Comic Sans MS", "Comic Sans", "Chalkboard SE", cursive;
+    cursor: crosshair;
+  }
+
+  /* Spinning sunburst of pure 2003 energy */
+  .burst {
+    position: fixed; inset: -100vmax;
+    background: repeating-conic-gradient(#ff0040 0 10deg, #ffea00 10deg 20deg, #00e5ff 20deg 30deg, #ff00d4 30deg 40deg);
+    animation: spin 12s linear infinite;
+    opacity: .55;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .stage {
+    position: fixed; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 2vh; padding: 16px 16px clamp(110px, 18vh, 170px); text-align: center;
+    animation: shake .35s infinite;
+  }
+  @keyframes shake {
+    0%,100% { transform: translate(0,0) rotate(0); }
+    25% { transform: translate(-3px,2px) rotate(-.4deg); }
+    50% { transform: translate(3px,-2px) rotate(.4deg); }
+    75% { transform: translate(-2px,-3px) rotate(0); }
+  }
+
+  .kicker {
+    font-family: "Monoton", cursive;
+    font-size: clamp(16px, 4vw, 42px);
+    color: #39ff14;
+    text-shadow: 0 0 8px #39ff14, 0 0 24px #39ff14;
+    animation: blink .6s steps(2) infinite;
+    margin: 0;
+  }
+  @keyframes blink { 50% { opacity: .15; } }
+
+  h1 {
+    margin: 0;
+    font-family: "Bungee Shade", "Impact", sans-serif;
+    font-size: clamp(44px, 12vw, 190px);
+    line-height: .95;
+    background: linear-gradient(90deg, #ff0040, #ff9a00, #ffea00, #39ff14, #00e5ff, #b300ff, #ff00d4, #ff0040);
+    background-size: 400% 100%;
+    -webkit-background-clip: text; background-clip: text;
+    color: transparent;
+    filter: drop-shadow(6px 6px 0 #000) drop-shadow(-3px -3px 0 #fff);
+    animation: rainbow 2s linear infinite, pulse 1s ease-in-out infinite;
+  }
+  @keyframes rainbow { to { background-position: 400% 0; } }
+  @keyframes pulse { 50% { transform: scale(1.07) rotate(-2deg); } }
+
+  .sub {
+    font-family: "Rubik Glitch", cursive;
+    font-size: clamp(18px, 4vw, 48px);
+    color: #ffea00;
+    text-shadow: 3px 3px 0 #ff0040, -3px -3px 0 #00e5ff;
+    animation: wobble 1.4s ease-in-out infinite;
+    margin: 0;
+  }
+  @keyframes wobble { 50% { transform: skewX(-15deg) scale(1.1); } }
+
+  .badge {
+    position: fixed; top: 6vh; right: 4vw;
+    width: clamp(90px, 16vw, 170px); aspect-ratio: 1;
+    display: grid; place-items: center;
+    background: #ffea00; color: #ff0040;
+    font-weight: 900; font-size: clamp(13px, 2.2vw, 22px); line-height: 1.05;
+    clip-path: polygon(50% 0, 61% 18%, 82% 7%, 80% 30%, 100% 35%, 85% 52%, 100% 68%, 78% 72%, 82% 94%, 61% 84%, 50% 100%, 39% 84%, 18% 94%, 22% 72%, 0 68%, 15% 52%, 0 35%, 20% 30%, 18% 7%, 39% 18%);
+    animation: spin 4s linear infinite reverse;
+    z-index: 5;
+  }
+
+  /* Marquee of shame */
+  .marquee {
+    position: fixed; left: 0; right: 0; bottom: 0;
+    background: #ff0040; color: #ffea00;
+    font-weight: 900; font-size: clamp(16px, 3vw, 28px);
+    white-space: nowrap; overflow: hidden;
+    border-top: 6px dashed #ffea00;
+    padding: 6px 0; z-index: 6;
+  }
+  .marquee span { display: inline-block; padding-left: 100%; animation: scroll 14s linear infinite; }
+  @keyframes scroll { to { transform: translateX(-100%); } }
+
+  /* Flames */
+  .flames {
+    position: fixed; left: 0; right: 0; bottom: 40px;
+    font-size: clamp(36px, 7vw, 80px);
+    white-space: nowrap; overflow: hidden; text-align: center;
+    z-index: 4; pointer-events: none;
+  }
+  .flames i { display: inline-block; font-style: normal; animation: flicker .25s ease-in-out infinite alternate; }
+  @keyframes flicker { to { transform: scaleY(1.35) translateY(-8px); filter: hue-rotate(-20deg) brightness(1.4); } }
+
+  /* Cars */
+  .car {
+    position: fixed; left: 0;
+    font-size: clamp(48px, 9vw, 110px);
+    z-index: 3; pointer-events: none;
+    animation: drive linear forwards;
+  }
+  .car.rev { animation-name: drive-rev; }
+  @keyframes drive { from { transform: translateX(-20vw) scaleX(-1); } to { transform: translateX(120vw) scaleX(-1); } }
+  @keyframes drive-rev { from { transform: translateX(120vw); } to { transform: translateX(-20vw); } }
+
+  /* Nunchucks */
+  .chuck {
+    position: fixed; width: clamp(90px, 14vw, 160px);
+    z-index: 3; pointer-events: none;
+    animation: twirl .5s linear infinite;
+  }
+  @keyframes twirl { to { transform: rotate(360deg); } }
+
+  /* Explosions */
+  .boom {
+    position: fixed; z-index: 7; pointer-events: none;
+    font-size: 30px; translate: -50% -50%;
+    animation: boom .9s ease-out forwards;
+  }
+  @keyframes boom {
+    0% { transform: scale(.2) rotate(0); opacity: 1; }
+    60% { opacity: 1; }
+    100% { transform: scale(6) rotate(40deg); opacity: 0; }
+  }
+  .ring {
+    position: fixed; z-index: 6; pointer-events: none;
+    width: 40px; height: 40px; border-radius: 50%; translate: -50% -50%;
+    border: 6px solid #ffea00; box-shadow: 0 0 30px #ff9a00, inset 0 0 30px #ff0040;
+    animation: ring .7s ease-out forwards;
+  }
+  @keyframes ring { to { transform: scale(9); opacity: 0; border-width: 1px; } }
+  .flash { position: fixed; inset: 0; background: #fff; z-index: 8; pointer-events: none; animation: flash .15s ease-out forwards; }
+  @keyframes flash { from { opacity: .7; } to { opacity: 0; } }
+
+  .hint { font-size: clamp(12px, 2vw, 18px); color: #fff; background: #b300ff; padding: 4px 12px; transform: rotate(-3deg); border: 3px dotted #39ff14; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0s !important; animation-iteration-count: 1 !important; }
+  }
+</style>
+</head>
+<body>
+  <div class="burst"></div>
+
+  <div class="badge">100%<br>REAL<br>RIZZ</div>
+
+  <main class="stage">
+    <p class="kicker">★ WARNING ★ WARNING ★</p>
+    <h1>Hard Rizz coming up...</h1>
+    <p class="sub">Herman. 30 years old. Still knows what rizz means.</p>
+    <p class="hint">👆 click anywhere for MORE EXPLOSIONS 👆</p>
+  </main>
+
+  <div class="flames" id="flames"></div>
+
+  <div class="marquee"><span>🔥 HARD RIZZ LOADING 🔥 THIRTY AND THRIVING 🔥 MAXIMUM AURA 🔥 NO CAP 🔥 SKIBIDI? HE KNOWS. 🔥 NUNCHUCK CERTIFIED 🔥 RIZZ LEVEL: OVER 9000 🔥 💥🏎️💥🚗💥🚓💥</span></div>
+
+<script>
+  const EXPLODE = ["💥", "💥", "🔥", "💣", "✨", "🎆"];
+  const CARS = ["🏎️", "🚗", "🚓", "🚙", "🚒", "🛻", "🏍️"];
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const rand = (a, b) => a + Math.random() * (b - a);
+  const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+
+  function spawn(el, ms) { document.body.appendChild(el); setTimeout(() => el.remove(), ms); }
+
+  function explode(x, y, big) {
+    const ring = document.createElement("div");
+    ring.className = "ring";
+    ring.style.left = x + "px"; ring.style.top = y + "px";
+    spawn(ring, 800);
+    for (let i = 0; i < (big ? 6 : 3); i++) {
+      const b = document.createElement("div");
+      b.className = "boom";
+      b.textContent = pick(EXPLODE);
+      b.style.left = x + rand(-40, 40) + "px";
+      b.style.top = y + rand(-40, 40) + "px";
+      b.style.animationDelay = i * 60 + "ms";
+      spawn(b, 1300);
+    }
+    if (big) { const f = document.createElement("div"); f.className = "flash"; spawn(f, 200); }
+  }
+
+  function car() {
+    const c = document.createElement("div");
+    const rev = Math.random() < .5;
+    c.className = "car" + (rev ? " rev" : "");
+    c.textContent = pick(CARS);
+    c.style.top = rand(10, 75) + "vh";
+    const dur = rand(1.6, 4);
+    c.style.animationDuration = dur + "s";
+    spawn(c, dur * 1000 + 100);
+  }
+
+  const CHUCK_SVG = `
+    <svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect x="18" y="62" width="62" height="16" rx="7" fill="#1a1a1a" stroke="#ffea00" stroke-width="3" transform="rotate(-25 49 70)"/>
+      <rect x="84" y="82" width="62" height="16" rx="7" fill="#1a1a1a" stroke="#ff0040" stroke-width="3" transform="rotate(35 115 90)"/>
+      <path d="M76 78 q6 12 10 2 q4 -10 8 2" fill="none" stroke="#ccc" stroke-width="4" stroke-dasharray="3 3"/>
+    </svg>`;
+
+  function chuck() {
+    const n = document.createElement("div");
+    n.className = "chuck";
+    n.innerHTML = CHUCK_SVG;
+    n.style.left = rand(0, 85) + "vw";
+    n.style.top = rand(5, 70) + "vh";
+    n.style.animationDuration = rand(.25, .7) + "s";
+    n.animate(
+      [{ translate: "0 0" }, { translate: `${rand(-30, 30)}vw ${rand(-20, 20)}vh` }],
+      { duration: 3000, easing: "ease-in-out", fill: "forwards" }
+    );
+    spawn(n, 3000);
+  }
+
+  // Flames along the bottom
+  const flames = document.getElementById("flames");
+  for (let i = 0; i < 30; i++) {
+    const f = document.createElement("i");
+    f.textContent = "🔥";
+    f.style.animationDelay = rand(0, .25) + "s";
+    flames.appendChild(f);
+  }
+
+  document.addEventListener("pointerdown", e => explode(e.clientX, e.clientY, true));
+
+  if (!reduced) {
+    setInterval(() => explode(rand(0, innerWidth), rand(0, innerHeight), Math.random() < .25), 350);
+    setInterval(car, 900);
+    setInterval(chuck, 1200);
+    car(); chuck();
+  }
+</script>
+</body>
+</html>
