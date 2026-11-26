@@ -186,7 +186,7 @@
   .reticle {
     position: fixed; z-index: 30; left: 0; top: 0; pointer-events: none; width: 0; height: 0;
   }
-  .reticle svg { position: absolute; overflow: visible; filter: drop-shadow(0 0 4px #ff0040) drop-shadow(0 0 1px #000); }
+  .reticle svg { position: absolute; overflow: visible; filter: drop-shadow(0 0 6px rgba(0,0,0,.6)); }
   .feather { position: fixed; z-index: 16; pointer-events: none; font-size: 30px; translate: -50% -50%; }
   .blam {
     position: fixed; z-index: 17; pointer-events: none; translate: -50% -50%;
@@ -365,14 +365,24 @@
     document.body.classList.add("hunt");
     let px = innerWidth / 2, py = innerHeight / 2, r = 40, hits = 0, done = false, chicken = null;
 
+    // A real-sized SVG (zero-size SVGs are not painted in Safari/Firefox), centred on the pointer.
+    const RMAX = 110;
+    ret.innerHTML = `<svg width="${RMAX * 2}" height="${RMAX * 2}" viewBox="${-RMAX} ${-RMAX} ${RMAX * 2} ${RMAX * 2}"
+        style="left:${-RMAX}px; top:${-RMAX}px">
+      <g id="rt-shape" fill="none" stroke-linecap="round">
+        <g class="rt-under" stroke="#000" stroke-width="9"></g>
+        <g class="rt-mid" stroke="#fff" stroke-width="6"></g>
+        <g class="rt-top" stroke="#ff0030" stroke-width="3.5"></g>
+      </g>
+      <circle r="4" fill="#ff0030" stroke="#fff" stroke-width="2"/></svg>`;
+    const layers = [...ret.querySelectorAll("#rt-shape > g")];
     function drawReticle() {
-      const g = r * 0.35; // gap in the cross lines
+      const g = r * 0.35, L = r + 14;
+      const d = `<circle cx="0" cy="0" r="${r}"/>
+        <line x1="${-L}" y1="0" x2="${-g}" y2="0"/><line x1="${g}" y1="0" x2="${L}" y2="0"/>
+        <line x1="0" y1="${-L}" x2="0" y2="${-g}"/><line x1="0" y1="${g}" x2="0" y2="${L}"/>`;
+      layers.forEach(l => (l.innerHTML = d));
       ret.style.transform = `translate(${px}px, ${py}px)`;
-      ret.innerHTML = `<svg width="0" height="0"><g fill="none" stroke="#ff0040" stroke-width="3" stroke-linecap="round">
-        <circle cx="0" cy="0" r="${r}"/>
-        <line x1="${-r - 12}" y1="0" x2="${-g}" y2="0"/><line x1="${g}" y1="0" x2="${r + 12}" y2="0"/>
-        <line x1="0" y1="${-r - 12}" x2="0" y2="${-g}"/><line x1="0" y1="${g}" x2="0" y2="${r + 12}"/></g>
-        <circle cx="0" cy="0" r="2.5" fill="#ff0040"/></svg>`;
     }
     (function pulse(t) {
       // Two out-of-sync waves so the size is hard to predict: ~10px to ~80px radius
