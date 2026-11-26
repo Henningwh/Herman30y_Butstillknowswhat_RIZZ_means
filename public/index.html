@@ -803,9 +803,12 @@
     const esc = t => String(t).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
     const fmt = ms => `${Math.floor(ms / 60000)}:${String(Math.floor(ms / 1000) % 60).padStart(2, "0")}`;
     let tracks;
-    try { ({ tracks } = await fetch("/api/songs/list").then(r => r.json())); } catch { return; }
-    if (!Array.isArray(tracks)) return;   // couldn't read it: the Spotify player below still works
+    try { ({ tracks } = await fetch("/api/songs/list").then(r => r.json())); } catch {}
     card.hidden = false;
+    if (!Array.isArray(tracks)) {         // couldn't read it: the Spotify player below still works
+      list.innerHTML = `<li style="color:var(--muted)">Couldn't load the song list right now – the player below has it.</li>`;
+      return;
+    }
     count.textContent = `${tracks.length} song${tracks.length === 1 ? "" : "s"}`;
     list.innerHTML = tracks.length ? tracks.map(t => `<li>
         <div class="meta">${t.url ? `<a href="${esc(t.url)}" target="_blank" rel="noopener">${esc(t.name)}</a>` : `<a>${esc(t.name)}</a>`}<span>${esc(t.artists)}</span></div>

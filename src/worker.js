@@ -41,17 +41,57 @@ export function parseEmbed(html) {
     });
 }
 
+const BROWSER_HEADERS = {
+  "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
+  "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+  "accept-language": "en-US,en;q=0.9",
+};
+
+const decode = s => s.replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#x27;|&#39;/g, "'").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+
+// Source 1: the embed page (what the player on the site shows) – has titles, artists and durations.
+async function fromEmbed(id, log) {
+  const res = await fetch(`https://open.spotify.com/embed/playlist/${id}`, { headers: BROWSER_HEADERS });
+  const html = await res.text();
+  log.push({ source: "embed", status: res.status, bytes: html.length, hasNextData: html.includes("__NEXT_DATA__") });
+  if (!res.ok) throw new Error(`embed ${res.status}`);
+  const tracks = parseEmbed(html);
+  log.push({ source: "embed", tracks: tracks.length });
+  if (!tracks.length) throw new Error("embed had no tracks");
+  return tracks;
+}
+
+// Source 2: the normal playlist page lists each song as <meta name="music:song">; look up titles via oEmbed.
+async function fromPlaylistPage(id, log) {
+  const res = await fetch(`https://open.spotify.com/playlist/${id}`, { headers: BROWSER_HEADERS });
+  const html = await res.text();
+  const urls = [...new Set([...html.matchAll(/<meta[^>]+name="music:song"[^>]+content="([^"]+)"/g)].map(m => decode(m[1])))].slice(0, 100);
+  log.push({ source: "playlist page", status: res.status, bytes: html.length, songs: urls.length });
+  if (!urls.length) throw new Error("no songs on playlist page");
+  return Promise.all(urls.map(async url => {
+    try {
+      const o = await fetch(`https://open.spotify.com/oembed?url=${encodeURIComponent(url)}`, { headers: BROWSER_HEADERS }).then(r => r.json());
+      return { name: o.title || "Unknown song", artists: "", ms: 0, url };
+    } catch {
+      return { name: "Unknown song", artists: "", ms: 0, url };
+    }
+  }));
+}
+
+async function readPlaylist(env, log) {
+  for (const source of [fromEmbed, fromPlaylistPage]) {
+    try { return await source(env.SPOTIFY_PLAYLIST_ID, log); }
+    catch (err) { log.push({ error: String(err.message || err) }); }
+  }
+  throw new Error("could not read playlist");
+}
+
 async function listTracks(env, ctx) {
   const cache = caches.default;
   const key = new Request(`https://cache.internal/playlist/${env.SPOTIFY_PLAYLIST_ID}`);
   const hit = await cache.match(key);
   if (hit) return hit;
-
-  const res = await fetch(`https://open.spotify.com/embed/playlist/${env.SPOTIFY_PLAYLIST_ID}`, {
-    headers: { "user-agent": "Mozilla/5.0 (compatible; playlist-reader)", "accept-language": "en" },
-  });
-  if (!res.ok) throw new Error(`embed fetch failed (${res.status})`);
-  const out = json({ tracks: parseEmbed(await res.text()) }, 200, { "cache-control": "public, max-age=60" });
+  const out = json({ tracks: await readPlaylist(env, []) }, 200, { "cache-control": "public, max-age=60" });
   ctx.waitUntil(cache.put(key, out.clone()));
   return out;
 }
@@ -66,6 +106,14 @@ export default {
         console.error(err);
         return json({ error: "could not read playlist" }, 502, { "cache-control": "no-store" });
       }
+    }
+    if (url.pathname === "/api/songs/debug") {
+      // Open this in a browser to see what Spotify returned (no secrets here).
+      const log = [];
+      let tracks = null;
+      try { tracks = await readPlaylist(env, log); } catch {}
+      return json({ playlist: env.SPOTIFY_PLAYLIST_ID, ok: Boolean(tracks), found: tracks?.length || 0, first: tracks?.slice(0, 3), log },
+                  200, { "cache-control": "no-store" });
     }
     if (url.pathname.startsWith("/api/")) return json({ error: "not found" }, 404);
     return env.ASSETS.fetch(req);

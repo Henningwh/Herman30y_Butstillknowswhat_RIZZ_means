@@ -39,3 +39,22 @@ test("other paths are served from static assets", async () => {
   assert.equal(await (await call("/")).text(), "static");
   assert.equal((await call("/api/nope")).status, 404);
 });
+
+test("falls back to the playlist page's song list when the embed has no data", async () => {
+  const tid = "c".repeat(22);
+  globalThis.fetch = async url => {
+    url = String(url);
+    if (url.includes("/embed/")) return new Response("<html>no data</html>");
+    if (url.includes("/oembed")) return Response.json({ title: "Levels" });
+    return new Response(`<meta name="music:song" content="https://open.spotify.com/track/${tid}">`);
+  };
+  const { tracks } = await (await call("/api/songs/list")).json();
+  assert.deepEqual(tracks, [{ name: "Levels", artists: "", ms: 0, url: "https://open.spotify.com/track/" + tid }]);
+});
+
+test("debug endpoint explains what happened", async () => {
+  const d = await (await call("/api/songs/debug")).json();
+  assert.equal(d.ok, true);
+  assert.equal(d.found, 2);
+  assert.equal(d.log[0].hasNextData, true);
+});
