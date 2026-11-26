@@ -340,8 +340,11 @@
         </article>
         <article class="card committee r" data-committee="development">
           <div class="dev-art" aria-hidden="true">
+            <span class="dev-starfield"></span>
             <span class="dev-orbit"></span>
             <span class="dev-orbit"></span>
+            <span class="dev-sword dev-sword-cyan"></span>
+            <span class="dev-sword dev-sword-magenta"></span>
             <span class="dev-core">&lt;/&gt;</span>
             <canvas class="dev-bursts"></canvas>
           </div>
@@ -349,9 +352,12 @@
             <div>
               <h3>Sick Development committee</h3>
               <p>Builds the site and the weekend’s digital surprises.</p>
-              <a class="committee-link" href="committee.html?team=development">View members<span class="sr-only"> · Sick Development committee</span></a>
+              <a class="committee-link" id="development-members" href="committee.html?team=development">View members<span class="sr-only"> · Sick Development committee</span></a>
             </div>
-            <button class="dev-trigger" type="button" hidden>⚡ Overclock</button>
+            <div class="dev-controls">
+              <button class="dev-trigger" type="button" hidden>⚡ Overclock</button>
+              <button class="dev-trigger singularity-trigger" type="button" hidden>Open singularity</button>
+            </div>
           </div>
         </article>
         <article class="card committee r" data-committee="dinner">
@@ -737,7 +743,11 @@
     }
   }
   addEventListener("hashchange", () => go(fromHash()));
-  const nav = i => { if (!busy && i >= 0 && i < ids.length) location.hash = ids[i]; };
+  const nav = i => {
+    if (!busy && !document.documentElement.classList.contains("crew-warping") && i >= 0 && i < ids.length) {
+      location.hash = ids[i];
+    }
+  };
   addEventListener("keydown", e => {
     if (e.target instanceof Element && e.target.closest("video")) return;
     if (e.key === "ArrowRight") nav(cur + 1);
@@ -853,9 +863,14 @@
   armIdle();
 })();
 </script>
+<div id="development-warp" class="development-warp" hidden aria-hidden="true">
+  <div class="warp-hole"></div>
+</div>
 <script type="module">
   import { mountDevSticker } from "./dev-sticker.js";
+  import { mountDevelopmentEntrance } from "./development-entrance.js";
   mountDevSticker(document.querySelector('[data-committee="development"]'));
+  mountDevelopmentEntrance();
 </script>
 </body>
 </html>
