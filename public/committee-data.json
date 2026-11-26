@@ -27,7 +27,8 @@
     "description": "Runs the games, speeches and Saturday night program.",
     "members": [
       {
-        "name": "Jørgen"
+        "name": "Jørgen",
+        "photo": "crew/jorgen.jpg"
       }
     ]
   },

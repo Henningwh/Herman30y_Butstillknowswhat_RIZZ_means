@@ -28,6 +28,22 @@ test("members are seeded from committee-data.json", async () => {
   assert.equal(members[0].scene, "grill");
 });
 
+test("Jørgen's photo is seeded and backfilled without replacing custom media", () => {
+  assert.equal(store().members("party")[0].photo, "crew/jorgen.jpg");
+  const ctx = fakeCtx();
+  const original = new GroupStore(ctx, {});
+  const [{ id }] = original.members("party");
+  const migration = "party:jorgen-photo:v1";
+  const simulateOldVersion = photo => {
+    original.sql.exec("DELETE FROM seeded WHERE grp = ?", migration);
+    original.sql.exec("UPDATE members SET photo = ? WHERE id = ?", photo, id);
+  };
+  simulateOldVersion("");
+  assert.equal(new GroupStore(ctx, {}).members("party")[0].photo, "crew/jorgen.jpg");
+  simulateOldVersion("/api/photos/admin-upload");
+  assert.equal(new GroupStore(ctx, {}).members("party")[0].photo, "/api/photos/admin-upload");
+});
+
 test("wrong PIN is refused and rate-limited; right PIN gives a token for that committee only", async () => {
   const s = store();
   assert.equal((await req(s, "POST", "/api/groups/lunch/login", { body: { pin: "nope" } })).status, 401);
