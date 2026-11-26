@@ -16,7 +16,7 @@ const committees = {
   party: {
     title: "Party", icon: "🎉", accent: "#ff89dc",
     description: "Runs the games, speeches and Saturday night program.",
-    members: []
+    members: [{ name: "Jørgen" }]
   },
   development: {
     title: "Sick Development", icon: "⚡", accent: "#ca9fff",
@@ -64,8 +64,14 @@ if (Object.hasOwn(committees, team)) {
         player.src = video;
         player.setAttribute("aria-label", `${name}’s video`);
         image.replaceWith(player);
-      } else {
+      } else if (photo) {
         image.src = photo;
+      } else {
+        const placeholder = document.createElement("span");
+        placeholder.className = "member-initial";
+        placeholder.setAttribute("aria-hidden", "true");
+        placeholder.textContent = Array.from(name)[0];
+        image.replaceWith(placeholder);
       }
       const heading = card.querySelector("h3");
       if (scene === "grill") {
@@ -78,7 +84,9 @@ if (Object.hasOwn(committees, team)) {
       } else {
         heading.textContent = name;
       }
-      card.querySelector("span").textContent = funFact;
+      const fact = card.querySelector("p");
+      if (funFact) fact.querySelector("span").textContent = funFact;
+      else fact.remove();
       list.append(card);
     }
     list.hidden = false;
