@@ -8,3 +8,6 @@
 
 /index.html
   Cache-Control: no-cache
+
+/rizz.html
+  Cache-Control: no-cache

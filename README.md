@@ -1,6 +1,8 @@
 # Herman30y_Butstillknowswhat_RIZZ_means
 
-A single, maximally tacky page: **Hard Rizz coming up...** with explosions, cars, nunchucks and flames.
+Info site for Herman's 30th cabin trip to Studenterhytta: agenda, music, committees, practical info and luggage transport (`public/index.html`).
+
+Easter egg: tap the "30" in the header five times to open the old **Hard Rizz** page (`public/rizz.html`).
 
 ## Develop
 

@@ -4,311 +4,249 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>HARD RIZZ INCOMING</title>
+<title>Herman 30 – Studenterhytta</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bungee+Shade&family=Monoton&family=Rubik+Glitch&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <style>
+  :root {
+    --bg: #f6f1e7; --card: #fffdf8; --ink: #1f2a24; --muted: #5d6b62;
+    --accent: #2f5d45; --accent-2: #b5562f; --line: #e2d9c8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #141a16; --card: #1c241f; --ink: #ece6da; --muted: #a3ada5;
+            --accent: #7fb896; --accent-2: #e08a5f; --line: #2c3730; }
+  }
   * { box-sizing: border-box; }
-  html, body { margin: 0; height: 100%; overflow: hidden; }
-  body {
-    background: #000;
-    color: #fff;
-    font-family: "Comic Sans MS", "Comic Sans", "Chalkboard SE", cursive;
-    cursor: crosshair;
-  }
+  html { scroll-behavior: smooth; scroll-padding-top: 64px; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+         font: 16px/1.55 "Inter", system-ui, sans-serif; }
+  h1, h2, h3 { font-family: "Fraunces", Georgia, serif; line-height: 1.15; margin: 0 0 .5em; }
 
-  /* Spinning sunburst of pure 2003 energy */
-  .burst {
-    position: fixed; inset: -100vmax;
-    background: repeating-conic-gradient(#ff0040 0 10deg, #ffea00 10deg 20deg, #00e5ff 20deg 30deg, #ff00d4 30deg 40deg);
-    animation: spin 12s linear infinite;
-    opacity: .55;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
+  nav { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--bg) 90%, transparent);
+        backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+  nav ul { list-style: none; margin: 0 auto; padding: 0 16px; max-width: 900px;
+           display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+  nav a { display: block; padding: 14px 10px; color: var(--muted); text-decoration: none;
+          font-weight: 600; font-size: 14px; white-space: nowrap; }
+  nav a:hover { color: var(--accent); }
 
-  .stage {
-    position: fixed; inset: 0;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 2vh; padding: 16px 16px clamp(110px, 18vh, 170px); text-align: center;
-    animation: shake .35s infinite;
-  }
-  @keyframes shake {
-    0%,100% { transform: translate(0,0) rotate(0); }
-    25% { transform: translate(-3px,2px) rotate(-.4deg); }
-    50% { transform: translate(3px,-2px) rotate(.4deg); }
-    75% { transform: translate(-2px,-3px) rotate(0); }
-  }
+  header.hero { max-width: 900px; margin: 0 auto; padding: 56px 16px 32px; }
+  .hero h1 { font-size: clamp(40px, 8vw, 72px); font-weight: 800; }
+  .hero h1 .thirty { color: var(--accent-2); cursor: default; user-select: none; }
+  .hero p { color: var(--muted); font-size: 18px; margin: 0; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+  .chip { background: var(--card); border: 1px solid var(--line); border-radius: 999px;
+          padding: 6px 14px; font-size: 14px; }
 
-  .kicker {
-    font-family: "Monoton", cursive;
-    font-size: clamp(16px, 4vw, 42px);
-    color: #39ff14;
-    text-shadow: 0 0 8px #39ff14, 0 0 24px #39ff14;
-    animation: blink .6s steps(2) infinite;
-    margin: 0;
-  }
-  @keyframes blink { 50% { opacity: .15; } }
+  main { max-width: 900px; margin: 0 auto; padding: 0 16px 80px; }
+  section { padding-top: 40px; }
+  section > h2 { font-size: 30px; }
+  .lead { color: var(--muted); margin-top: -4px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px; }
+  .grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+  .todo { color: var(--accent-2); font-style: italic; }
 
-  h1 {
-    margin: 0;
-    font-family: "Bungee Shade", "Impact", sans-serif;
-    font-size: clamp(44px, 12vw, 190px);
-    line-height: .95;
-    background: linear-gradient(90deg, #ff0040, #ff9a00, #ffea00, #39ff14, #00e5ff, #b300ff, #ff00d4, #ff0040);
-    background-size: 400% 100%;
-    -webkit-background-clip: text; background-clip: text;
-    color: transparent;
-    filter: drop-shadow(6px 6px 0 #000) drop-shadow(-3px -3px 0 #fff);
-    animation: rainbow 2s linear infinite, pulse 1s ease-in-out infinite;
-  }
-  @keyframes rainbow { to { background-position: 400% 0; } }
-  @keyframes pulse { 50% { transform: scale(1.07) rotate(-2deg); } }
+  /* Agenda */
+  .day + .day { margin-top: 14px; }
+  .day h3 { font-size: 20px; }
+  .slots { list-style: none; margin: 0; padding: 0; }
+  .slots li { display: grid; grid-template-columns: 64px 1fr; gap: 12px; padding: 10px 0;
+              border-top: 1px solid var(--line); }
+  .slots time { font-weight: 600; color: var(--accent); font-variant-numeric: tabular-nums; }
 
-  .sub {
-    font-family: "Rubik Glitch", cursive;
-    font-size: clamp(18px, 4vw, 48px);
-    color: #ffea00;
-    text-shadow: 3px 3px 0 #ff0040, -3px -3px 0 #00e5ff;
-    animation: wobble 1.4s ease-in-out infinite;
-    margin: 0;
-  }
-  @keyframes wobble { 50% { transform: skewX(-15deg) scale(1.1); } }
+  /* Music */
+  .btn { display: inline-block; background: var(--accent); color: var(--bg); text-decoration: none;
+         font-weight: 600; padding: 10px 18px; border-radius: 10px; border: 0; cursor: pointer; font: inherit; }
+  .songs { counter-reset: s; list-style: none; padding: 0; margin: 16px 0 0; }
+  .songs li { counter-increment: s; display: flex; gap: 12px; align-items: baseline; padding: 8px 0;
+              border-top: 1px solid var(--line); }
+  .songs li::before { content: counter(s); color: var(--muted); width: 24px; flex: none; }
+  .songs .by { color: var(--muted); font-size: 14px; margin-left: auto; text-align: right; }
 
-  .badge {
-    position: fixed; top: 6vh; right: 4vw;
-    width: clamp(90px, 16vw, 170px); aspect-ratio: 1;
-    display: grid; place-items: center;
-    background: #ffea00; color: #ff0040;
-    font-weight: 900; font-size: clamp(13px, 2.2vw, 22px); line-height: 1.05;
-    clip-path: polygon(50% 0, 61% 18%, 82% 7%, 80% 30%, 100% 35%, 85% 52%, 100% 68%, 78% 72%, 82% 94%, 61% 84%, 50% 100%, 39% 84%, 18% 94%, 22% 72%, 0 68%, 15% 52%, 0 35%, 20% 30%, 18% 7%, 39% 18%);
-    animation: spin 4s linear infinite reverse;
-    z-index: 5;
-  }
+  /* Committees */
+  .committee .type { display: inline-block; font-size: 12px; font-weight: 600; letter-spacing: .04em;
+                     text-transform: uppercase; color: var(--accent-2); margin-bottom: 6px; }
+  .committee ul { padding-left: 18px; margin: 10px 0 0; }
 
-  /* Marquee of shame */
-  .marquee {
-    position: fixed; left: 0; right: 0; bottom: 0;
-    background: #ff0040; color: #ffea00;
-    font-weight: 900; font-size: clamp(16px, 3vw, 28px);
-    white-space: nowrap; overflow: hidden;
-    border-top: 6px dashed #ffea00;
-    padding: 6px 0; z-index: 6;
-  }
-  .marquee span { display: inline-block; padding-left: 100%; animation: scroll 14s linear infinite; }
-  @keyframes scroll { to { transform: translateX(-100%); } }
+  /* Info */
+  dl { display: grid; grid-template-columns: max-content 1fr; gap: 10px 20px; margin: 0; }
+  dt { font-weight: 600; }
+  dd { margin: 0; }
+  @media (max-width: 520px) { dl { grid-template-columns: 1fr; gap: 2px; } dd { margin-bottom: 10px; } }
 
-  /* Flames */
-  .flames {
-    position: fixed; left: 0; right: 0; bottom: 40px;
-    font-size: clamp(36px, 7vw, 80px);
-    white-space: nowrap; overflow: hidden; text-align: center;
-    z-index: 4; pointer-events: none;
-  }
-  .flames i { display: inline-block; font-style: normal; animation: flicker .25s ease-in-out infinite alternate; }
-  @keyframes flicker { to { transform: scaleY(1.35) translateY(-8px); filter: hue-rotate(-20deg) brightness(1.4); } }
-
-  /* Cars */
-  .car {
-    position: fixed; left: 0;
-    font-size: clamp(48px, 9vw, 110px);
-    z-index: 3; pointer-events: none;
-    animation: drive linear forwards;
-  }
-  .car.rev { animation-name: drive-rev; }
-  @keyframes drive { from { transform: translateX(-20vw) scaleX(-1); } to { transform: translateX(120vw) scaleX(-1); } }
-  @keyframes drive-rev { from { transform: translateX(120vw); } to { transform: translateX(-20vw); } }
-
-  /* Nunchucks */
-  .chuck {
-    position: fixed; width: clamp(90px, 14vw, 160px);
-    z-index: 3; pointer-events: none;
-    animation: twirl .5s linear infinite;
-  }
-  @keyframes twirl { to { transform: rotate(360deg); } }
-
-  /* Explosions */
-  .boom {
-    position: fixed; z-index: 7; pointer-events: none;
-    font-size: 30px; translate: -50% -50%;
-    animation: boom .9s ease-out forwards;
-  }
-  @keyframes boom {
-    0% { transform: scale(.2) rotate(0); opacity: 1; }
-    60% { opacity: 1; }
-    100% { transform: scale(6) rotate(40deg); opacity: 0; }
-  }
-  .ring {
-    position: fixed; z-index: 6; pointer-events: none;
-    width: 40px; height: 40px; border-radius: 50%; translate: -50% -50%;
-    border: 6px solid #ffea00; box-shadow: 0 0 30px #ff9a00, inset 0 0 30px #ff0040;
-    animation: ring .7s ease-out forwards;
-  }
-  @keyframes ring { to { transform: scale(9); opacity: 0; border-width: 1px; } }
-  .flash { position: fixed; inset: 0; background: #fff; z-index: 8; pointer-events: none; animation: flash .15s ease-out forwards; }
-  @keyframes flash { from { opacity: .7; } to { opacity: 0; } }
-
-  .hint { font-size: clamp(12px, 2vw, 18px); color: #fff; background: #b300ff; padding: 4px 12px; transform: rotate(-3deg); border: 3px dotted #39ff14; }
-
-  /* Sneaky NO RAGRETS guy: anchored on a screen edge, rotated so his head always points inward */
-  .peek { position: fixed; width: 0; height: 0; z-index: 9; pointer-events: none; transform-origin: 0 0; }
-  .polaroid {
-    position: absolute; left: calc(var(--w) / -2); top: 0;
-    width: var(--w); padding: 10px 10px 0;
-    background: #fff; border: 4px solid #ff00d4; border-radius: 4px;
-    box-shadow: 0 0 0 4px #ffea00, 0 0 40px 10px #00e5ff;
-    pointer-events: auto; cursor: pointer;
-  }
-  .polaroid img { display: block; width: 100%; height: auto; }
-  .polaroid p {
-    margin: 0; padding: 6px 0 10px; text-align: center;
-    font-family: "Rubik Glitch", cursive; font-size: calc(var(--w) / 9);
-    color: #ff0040; text-shadow: 2px 2px 0 #00e5ff;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after { animation-duration: 0s !important; animation-iteration-count: 1 !important; }
-  }
+  footer { text-align: center; color: var(--muted); font-size: 13px; padding: 24px 16px 40px; }
 </style>
 </head>
 <body>
-  <div class="burst"></div>
 
-  <div class="badge">100%<br>REAL<br>RIZZ</div>
+<nav>
+  <ul>
+    <li><a href="#agenda">Agenda</a></li>
+    <li><a href="#music">Music</a></li>
+    <li><a href="#committees">Committees</a></li>
+    <li><a href="#info">Practical info</a></li>
+    <li><a href="#luggage">Luggage</a></li>
+  </ul>
+</nav>
 
-  <main class="stage">
-    <p class="kicker">★ WARNING ★ WARNING ★</p>
-    <h1>Hard Rizz coming up....</h1>
-    <p class="hint">👆 click anywhere for MORE EXPLOSIONS 👆</p>
-  </main>
+<header class="hero">
+  <h1>Herman <span class="thirty" id="egg">30</span></h1>
+  <p>A cabin weekend at Studenterhytta, Nordmarka – Oslo.</p>
+  <div class="chips">
+    <span class="chip">📅 <span class="todo">[dates]</span></span>
+    <span class="chip">📍 Studenterhytta</span>
+    <span class="chip">💸 <span class="todo">[price]</span> per person</span>
+  </div>
+</header>
 
-  <div class="flames" id="flames"></div>
+<main>
 
-  <div class="marquee"><span>🔥 HARD RIZZ LOADING 🔥 THIRTY AND THRIVING 🔥 MAXIMUM AURA 🔥 NO CAP 🔥 SKIBIDI? HE KNOWS. 🔥 NUNCHUCK CERTIFIED 🔥 RIZZ LEVEL: OVER 9000 🔥 💥🏎️💥🚗💥🚓💥</span></div>
+  <!-- AGENDA: copy a .day block per day, and an <li> per slot -->
+  <section id="agenda">
+    <h2>Agenda</h2>
+    <p class="lead">Rough plan. Times are cabin times, i.e. approximate.</p>
+
+    <div class="card day">
+      <h3>Friday <span class="todo">[date]</span></h3>
+      <ul class="slots">
+        <li><time>16:00</time><div>Meet at <span class="todo">[meeting point]</span>, hike in</div></li>
+        <li><time>18:00</time><div>Arrive, check in, light the fire</div></li>
+        <li><time>20:00</time><div>Dinner – <span class="todo">[committee]</span></div></li>
+        <li><time>22:00</time><div><span class="todo">[activity]</span></div></li>
+      </ul>
+    </div>
+
+    <div class="card day">
+      <h3>Saturday <span class="todo">[date]</span></h3>
+      <ul class="slots">
+        <li><time>10:00</time><div>Breakfast</div></li>
+        <li><time>12:00</time><div><span class="todo">[daytime activity]</span></div></li>
+        <li><time>19:00</time><div>Birthday dinner &amp; speeches</div></li>
+        <li><time>22:00</time><div>Party</div></li>
+      </ul>
+    </div>
+
+    <div class="card day">
+      <h3>Sunday <span class="todo">[date]</span></h3>
+      <ul class="slots">
+        <li><time>10:00</time><div>Breakfast &amp; cleaning</div></li>
+        <li><time>13:00</time><div>Check out, hike down</div></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- MUSIC: add the collaborative playlist link; the list below is for highlights/requests -->
+  <section id="music">
+    <h2>Music</h2>
+    <p class="lead">Add your songs to the shared playlist – everyone can edit it.</p>
+    <div class="card">
+      <a class="btn" href="#" id="playlist-link">Open the playlist →</a>
+      <p class="todo" style="margin:10px 0 0">[Paste the collaborative Spotify playlist link in the button above]</p>
+      <ol class="songs">
+        <li><span>Song title – Artist</span><span class="by">added by Name</span></li>
+        <li><span>Song title – Artist</span><span class="by">added by Name</span></li>
+        <li><span>Song title – Artist</span><span class="by">added by Name</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- COMMITTEES: one .committee card per committee -->
+  <section id="committees">
+    <h2>Committees</h2>
+    <p class="lead">Who does what. Everyone is on at least one.</p>
+    <div class="grid">
+      <div class="card committee">
+        <span class="type">Food</span>
+        <h3>Kitchen committee</h3>
+        <p>Plans the menu, shops and runs the kitchen.</p>
+        <ul><li>Name</li><li>Name</li><li>Name</li></ul>
+      </div>
+      <div class="card committee">
+        <span class="type">Drinks</span>
+        <h3>Bar committee</h3>
+        <p>Keeps the bar stocked and the glasses full.</p>
+        <ul><li>Name</li><li>Name</li></ul>
+      </div>
+      <div class="card committee">
+        <span class="type">Entertainment</span>
+        <h3>Party committee</h3>
+        <p>Games, speeches, the program for Saturday night.</p>
+        <ul><li>Name</li><li>Name</li></ul>
+      </div>
+      <div class="card committee">
+        <span class="type">Logistics</span>
+        <h3>Transport committee</h3>
+        <p>Luggage transport and getting everyone up and down.</p>
+        <ul><li>Name</li><li>Name</li></ul>
+      </div>
+      <div class="card committee">
+        <span class="type">Cleanup</span>
+        <h3>Cleaning committee</h3>
+        <p>Makes sure we get the cabin deposit back.</p>
+        <ul><li>Name</li><li>Name</li></ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="info">
+    <h2>Practical info</h2>
+    <p class="lead">We rent the cabin together and split the cost.</p>
+    <div class="card">
+      <dl>
+        <dt>Place</dt>
+        <dd>Studenterhytta, Nordmarka, Oslo <span class="todo">[address / map link]</span></dd>
+        <dt>When</dt>
+        <dd><span class="todo">[Friday date + time] → [Sunday date + time]</span></dd>
+        <dt>Meeting point</dt>
+        <dd><span class="todo">[e.g. Frognerseteren T-bane station, time]</span> – then we hike in together</dd>
+        <dt>Price</dt>
+        <dd><span class="todo">[amount]</span> per person – covers the cabin <span class="todo">[and food?]</span></dd>
+        <dt>Payment</dt>
+        <dd>Vipps <span class="todo">[amount]</span> to <span class="todo">[name / number]</span> by <span class="todo">[deadline]</span>. Mark it “Herman 30”.</dd>
+        <dt>Bring</dt>
+        <dd>Sleeping bag or sheets, indoor shoes, warm clothes, headlamp, <span class="todo">[…]</span></dd>
+        <dt>Contact</dt>
+        <dd><span class="todo">[name + phone]</span></dd>
+      </dl>
+    </div>
+  </section>
+
+  <section id="luggage">
+    <h2>Luggage transport</h2>
+    <p class="lead">There is no road to the door – walk light, send the heavy stuff.</p>
+    <div class="card">
+      <dl>
+        <dt>Drop-off</dt>
+        <dd><span class="todo">[where]</span>, <span class="todo">[day + time]</span></dd>
+        <dt>Transported by</dt>
+        <dd><span class="todo">[car / name]</span></dd>
+        <dt>What to send</dt>
+        <dd>Sleeping bag, drinks, heavy bags. Label everything with your name.</dd>
+        <dt>Carry yourself</dt>
+        <dd>What you need for the hike in, plus valuables.</dd>
+        <dt>Return</dt>
+        <dd><span class="todo">[pick-up time and place on Sunday]</span></dd>
+      </dl>
+    </div>
+  </section>
+
+</main>
+
+<footer>Made with love for Herman. Nobody tap the 30.</footer>
 
 <script>
-  const EXPLODE = ["💥", "💥", "🔥", "💣", "✨", "🎆"];
-  const CARS = ["🏎️", "🚗", "🚓", "🚙", "🚒", "🛻", "🏍️"];
-  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const rand = (a, b) => a + Math.random() * (b - a);
-  const pick = arr => arr[Math.floor(Math.random() * arr.length)];
-
-  function spawn(el, ms) { document.body.appendChild(el); setTimeout(() => el.remove(), ms); }
-
-  function explode(x, y, big) {
-    const ring = document.createElement("div");
-    ring.className = "ring";
-    ring.style.left = x + "px"; ring.style.top = y + "px";
-    spawn(ring, 800);
-    for (let i = 0; i < (big ? 6 : 3); i++) {
-      const b = document.createElement("div");
-      b.className = "boom";
-      b.textContent = pick(EXPLODE);
-      b.style.left = x + rand(-40, 40) + "px";
-      b.style.top = y + rand(-40, 40) + "px";
-      b.style.animationDelay = i * 60 + "ms";
-      spawn(b, 1300);
-    }
-    if (big) { const f = document.createElement("div"); f.className = "flash"; spawn(f, 200); }
-  }
-
-  function car() {
-    const c = document.createElement("div");
-    const rev = Math.random() < .5;
-    c.className = "car" + (rev ? " rev" : "");
-    c.textContent = pick(CARS);
-    c.style.top = rand(10, 75) + "vh";
-    const dur = rand(1.6, 4);
-    c.style.animationDuration = dur + "s";
-    spawn(c, dur * 1000 + 100);
-  }
-
-  const CHUCK_SVG = `
-    <svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <rect x="18" y="62" width="62" height="16" rx="7" fill="#1a1a1a" stroke="#ffea00" stroke-width="3" transform="rotate(-25 49 70)"/>
-      <rect x="84" y="82" width="62" height="16" rx="7" fill="#1a1a1a" stroke="#ff0040" stroke-width="3" transform="rotate(35 115 90)"/>
-      <path d="M76 78 q6 12 10 2 q4 -10 8 2" fill="none" stroke="#ccc" stroke-width="4" stroke-dasharray="3 3"/>
-    </svg>`;
-
-  function chuck() {
-    const n = document.createElement("div");
-    n.className = "chuck";
-    n.innerHTML = CHUCK_SVG;
-    n.style.left = rand(0, 85) + "vw";
-    n.style.top = rand(5, 70) + "vh";
-    n.style.animationDuration = rand(.25, .7) + "s";
-    n.animate(
-      [{ translate: "0 0" }, { translate: `${rand(-30, 30)}vw ${rand(-20, 20)}vh` }],
-      { duration: 3000, easing: "ease-in-out", fill: "forwards" }
-    );
-    spawn(n, 3000);
-  }
-
-  // Flames along the bottom
-  const flames = document.getElementById("flames");
-  for (let i = 0; i < 30; i++) {
-    const f = document.createElement("i");
-    f.textContent = "🔥";
-    f.style.animationDelay = rand(0, .25) + "s";
-    flames.appendChild(f);
-  }
-
-  document.addEventListener("pointerdown", e => explode(e.clientX, e.clientY, true));
-
-  if (!reduced) {
-    setInterval(() => explode(rand(0, innerWidth), rand(0, innerHeight), Math.random() < .25), 350);
-    setInterval(car, 900);
-    setInterval(chuck, 1200);
-    car(); chuck();
-  }
-  // NO RAGRETS guy sneaks in from a random edge at random (but frequent) intervals.
-  // Each edge rotates the card so his head faces into the screen, never off it.
-  function sneak() {
-    const W = innerWidth, H = innerHeight;
-    const w = Math.round(Math.min(Math.min(W, H) * rand(.4, .55), 340));
-    // gap = how far the whole card stops clear of that edge.
-    // Bottom gets extra room for the marquee and the phone browser's toolbar.
-    const BOTTOM_GAP = 130, EDGE_GAP = 18;
-    const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
-    const alongX = () => clamp(rand(.15, .85) * W, w / 2 + 12, W - w / 2 - 12);
-    const alongY = () => clamp(rand(.2, .8) * H, w / 2 + 12, Math.max(w / 2 + 12, H - BOTTOM_GAP - w / 2));
-    const sides = [
-      { rot: 0,   x: alongX, y: () => H, gap: BOTTOM_GAP }, // bottom
-      { rot: 180, x: alongX, y: () => 0, gap: EDGE_GAP },   // top
-      { rot: 90,  x: () => 0, y: alongY, gap: EDGE_GAP },   // left
-      { rot: -90, x: () => W, y: alongY, gap: EDGE_GAP },   // right
-    ];
-    const side = pick(sides);
-    const peek = document.createElement("div");
-    peek.className = "peek";
-    peek.style.left = side.x() + "px";
-    peek.style.top = side.y() + "px";
-    peek.style.transform = `rotate(${side.rot + rand(-6, 6)}deg)`;
-    peek.innerHTML = `<div class="polaroid" style="--w:${w}px"><img src="norag.jpg?v=2" width="480" height="525" alt="NO RAGRETS"><p>NO RAGRETS 😎</p></div>`;
-    const card = peek.firstChild;
-    card.addEventListener("pointerdown", e => {
-      e.stopPropagation();
-      explode(e.clientX, e.clientY, true);
-      explode(e.clientX + rand(-80, 80), e.clientY + rand(-80, 80), true);
+  // Easter egg: tap the "30" five times quickly to open the old Hard Rizz page.
+  (() => {
+    const egg = document.getElementById("egg");
+    let taps = 0, timer;
+    egg.addEventListener("click", () => {
+      taps++;
+      clearTimeout(timer);
+      timer = setTimeout(() => (taps = 0), 1500);
+      if (taps >= 5) location.href = "rizz.html";
     });
-    document.body.appendChild(peek);
-    // Slide the whole card in (its full height plus the gap), so nothing is hidden.
-    const t = card.offsetHeight + side.gap;
-    const at = (px, deg = 0) => `translateY(${-px}px) rotate(${deg}deg)`;
-    const hold = rand(1400, 2600);
-    const anim = card.animate([
-      { transform: at(0), easing: "cubic-bezier(.3,1.4,.5,1)" },
-      { transform: at(t), offset: .18 },
-      { transform: at(t - 10, 4), offset: .3 },
-      { transform: at(t, -4), offset: .45 },
-      { transform: at(t - 6, 3), offset: .65 },
-      { transform: at(t), offset: .82, easing: "ease-in" },
-      { transform: at(0) },
-    ], { duration: hold + 900 });
-    anim.onfinish = () => peek.remove();
-    setTimeout(sneak, rand(2500, 6500));
-  }
-  setTimeout(sneak, 1500);
+  })();
 </script>
 </body>
 </html>
