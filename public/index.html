@@ -277,7 +277,7 @@
     peek.style.left = side.x() + "px";
     peek.style.top = side.y() + "px";
     peek.style.transform = `rotate(${side.rot + rand(-12, 12)}deg)`;
-    peek.innerHTML = `<div class="polaroid" style="--w:${w}px"><img src="norag.jpg" alt="NO RAGRETS"><p>NO RAGRETS 😎</p></div>`;
+    peek.innerHTML = `<div class="polaroid" style="--w:${w}px"><img src="norag.jpg?v=2" alt="NO RAGRETS"><p>NO RAGRETS 😎</p></div>`;
     const card = peek.firstChild;
     card.addEventListener("pointerdown", e => {
       e.stopPropagation();

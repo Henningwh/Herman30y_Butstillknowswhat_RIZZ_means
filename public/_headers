@@ -3,5 +3,8 @@
   X-Content-Type-Options: nosniff
   Referrer-Policy: no-referrer
 
+/
+  Cache-Control: no-cache
+
 /index.html
-  Cache-Control: public, max-age=0, must-revalidate
+  Cache-Control: no-cache
