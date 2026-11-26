@@ -2,7 +2,7 @@
   --aim-x: 0px; --aim-y: 0px; --tilt-x: 0deg; --tilt-y: 0deg;
   position: relative; isolation: isolate; display: grid; place-items: center; overflow: hidden;
   height: clamp(214px, 36vw, 320px); border-bottom: 1px solid #ad79ff66;
-  background: radial-gradient(ellipse at center, #401779 0%, #171437 47%, #080818 83%);
+  background: radial-gradient(ellipse at center, #6a1f83 0%, #211a52 31%, #09091f 72%);
 }
 .dev-art::before {
   content: ""; position: absolute; inset: 41% -45% -85%; pointer-events: none;
@@ -12,8 +12,25 @@
   transform-origin: center 15%; mask-image: linear-gradient(transparent, #000 28%, #000);
 }
 .dev-art::after {
-  content: ""; position: absolute; inset: 0; pointer-events: none;
-  background: repeating-linear-gradient(0deg, #a6a0ff12 0 1px, transparent 1px 5px);
+  content: ""; position: absolute; inset: 12px; z-index: 2; pointer-events: none; opacity: .65;
+  background:
+    linear-gradient(#92eaff, #92eaff) top left / 30px 2px,
+    linear-gradient(#92eaff, #92eaff) top left / 2px 19px,
+    linear-gradient(#d378ff, #d378ff) top right / 30px 2px,
+    linear-gradient(#d378ff, #d378ff) top right / 2px 19px,
+    linear-gradient(#d378ff, #d378ff) bottom left / 30px 2px,
+    linear-gradient(#d378ff, #d378ff) bottom left / 2px 19px,
+    linear-gradient(#92eaff, #92eaff) bottom right / 30px 2px,
+    linear-gradient(#92eaff, #92eaff) bottom right / 2px 19px;
+  background-repeat: no-repeat;
+}
+.dev-starfield {
+  position: absolute; inset: 0; pointer-events: none; opacity: .66;
+  background:
+    radial-gradient(circle, #c8f9ff 0 1px, transparent 1.5px) 6px 15px / 113px 77px,
+    radial-gradient(circle, #f1aaff 0 1px, transparent 1.5px) 39px 43px / 163px 107px,
+    radial-gradient(circle, #c8f9ffa0 0 .7px, transparent 1.2px) 15px 22px / 53px 47px;
+  mask-image: radial-gradient(ellipse, transparent 17%, #000b 50%, #000 85%);
 }
 .dev-orbit {
   --orbit-size: min(53vw, 370px);
@@ -27,6 +44,23 @@
   background: repeating-conic-gradient(#37e9ff 0 4deg, transparent 4deg 27deg);
   transform: translate(var(--aim-x), var(--aim-y)) rotate(13deg) scaleY(.39);
 }
+.dev-sword {
+  position: absolute; left: 50%; top: 50%; width: clamp(136px, 35vw, 310px); height: 15px;
+  transform-origin: center; transform: translate(-50%, -50%) rotate(var(--sword-angle));
+  color: var(--sword-color); pointer-events: none;
+}
+.dev-sword::before, .dev-sword::after { content: ""; position: absolute; }
+.dev-sword::before {
+  inset: 4px 0 4px 19%; border-radius: 5px 100% 100% 5px; background: #fff;
+  box-shadow: 0 0 6px 3px currentColor, 0 0 22px 5px currentColor, 0 0 42px currentColor;
+}
+.dev-sword::after {
+  left: 0; width: 22%; height: 100%; border: 1px solid #c3c4e6; border-radius: 5px 2px 2px 5px;
+  background: repeating-linear-gradient(90deg, #211c37 0 5px, #777a99 5px 8px);
+  box-shadow: inset 0 3px 3px #ffffff50, 0 3px 7px #000;
+}
+.dev-sword-cyan { --sword-angle: -34deg; --sword-color: #26dfff; }
+.dev-sword-magenta { --sword-angle: 214deg; --sword-color: #ff36bd; }
 .dev-core {
   position: relative; display: grid; place-items: center; width: clamp(112px, 25vw, 184px); aspect-ratio: 1.38;
   border: 3px solid #93fcff; border-radius: 16px;
@@ -45,6 +79,7 @@
 .dev-bursts { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .dev-art[data-interactive] { cursor: crosshair; }
 .dev-content { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px; padding: 22px; }
+.dev-controls { display: flex; flex-wrap: wrap; gap: 12px; }
 .dev-content h3 { color: #f4e4ff; }
 .dev-trigger {
   border: 1px solid #ffc65d; border-radius: 10px; padding: 10px 16px;
@@ -54,7 +89,51 @@
 .dev-trigger[hidden] { display: none; }
 .dev-trigger:hover { background: #fff2a7; }
 .dev-trigger:focus-visible { outline: 3px solid #8dfcff; outline-offset: 4px; }
+.singularity-trigger {
+  border-color: #b996ff; color: #fdf4ff;
+  background: linear-gradient(110deg, #4b2891, #742b82 64%, #31559d);
+  box-shadow: 0 0 18px #a055ff63, inset 0 1px #ffffff30;
+}
+.singularity-trigger:hover { background: linear-gradient(110deg, #6036b0, #9b419e, #406ac0); }
+.singularity-trigger[aria-disabled="true"] { cursor: wait; }
+.dev-art.is-collapsing .dev-core { opacity: .42; }
 .dev-art.ignited .dev-core { border-color: #ffe287; box-shadow: 0 0 40px #ff9a47a0, inset 0 0 30px #ff5daf80, 8px 10px 0 #782557; }
 @media (prefers-reduced-motion: reduce) {
   .dev-core { transition: none; }
 }
+
+/* The roster entrance pulls the other Crew cards into a viewport-sized scene. */
+.development-warp[hidden] { display: none; }
+.development-warp {
+  position: fixed; inset: 0; z-index: 95; overflow: hidden;
+  background: radial-gradient(ellipse at center, #33104c32 8%, #070515ba 85%);
+  animation: warp-dim 300ms ease-out both;
+}
+.crew-warping, .crew-warping .pane { overscroll-behavior: none; }
+.crew-warping #committees [data-committee]:not([data-committee="development"]) { visibility: hidden; }
+.warp-hole {
+  position: absolute; left: 50%; top: 50%; z-index: 2;
+  width: clamp(96px, 18vw, 185px); aspect-ratio: 1; border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, #000 0 50%, #080014 55%, #26034a 62%, transparent 69%);
+  box-shadow: 0 0 65px #992cff85;
+  animation: warp-open 460ms cubic-bezier(.15,.8,.21,1) both;
+}
+.warp-hole::before, .warp-hole::after {
+  content: ""; position: absolute; inset: -20%; border-radius: 50%;
+  mask-image: radial-gradient(transparent 53%, #000 55% 64%, transparent 70%);
+  background: conic-gradient(from 10deg, transparent, #e466ff 60deg, #fff0ff 105deg,
+    transparent 152deg, #4cf5ff 228deg, #f7f5ff 266deg, transparent 312deg);
+  animation: warp-spin 850ms linear infinite;
+}
+.warp-hole::after { inset: -39%; opacity: .55; animation-duration: 1.5s; animation-direction: reverse; }
+.development-warp .warp-card {
+  position: absolute; z-index: 1; margin: 0; pointer-events: none;
+  will-change: transform, opacity;
+}
+@keyframes warp-dim { from { opacity: 0; } to { opacity: 1; } }
+@keyframes warp-open {
+  from { transform: translate(-50%, -50%) scale(.06); opacity: 0; }
+  to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+@keyframes warp-spin { to { transform: rotate(360deg); } }
