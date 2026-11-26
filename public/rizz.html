@@ -180,7 +180,7 @@
   .hud .count { margin-top: 8px; font-size: clamp(20px, 3vw, 28px); letter-spacing: .1em; }
   .hud .count b { color: #ffea00; }
   .chicken {
-    position: fixed; z-index: 15; font-size: clamp(54px, 9vmin, 90px); line-height: 1; translate: -50% -50%;
+    position: fixed; z-index: 15; font-size: clamp(64px, 11vmin, 110px); line-height: 1; translate: -50% -50%;
     pointer-events: none; filter: drop-shadow(0 0 12px #fff) drop-shadow(4px 4px 0 #000); user-select: none;
   }
   .reticle {
@@ -386,7 +386,7 @@
     }
     (function pulse(t) {
       // Two out-of-sync waves so the size is hard to predict: ~10px to ~80px radius
-      r = 45 + 22 * Math.sin(t / 420) + 13 * Math.sin(t / 157 + 1.3);
+      r = 55 + 15 * Math.sin(t / 420) + 10 * Math.sin(t / 157 + 1.3); // ~30px to ~80px
       drawReticle();
       if (!done) requestAnimationFrame(pulse);
     })(0);
@@ -403,12 +403,12 @@
       document.body.appendChild(c);
       c.animate([{ scale: 0 }, { scale: 1.25 }, { scale: 1 }], { duration: 220, easing: "ease-out" });
       chicken = c;
-      const life = rand(650, 1300) - hits * 120; // a bit faster after each hit
+      const life = rand(1200, 1900) - hits * 80; // a bit faster after each hit
       c._timer = setTimeout(() => {
         if (chicken !== c) return;
         chicken = null; c.classList.add("gone");
         c.animate([{ scale: 1 }, { scale: 0 }], { duration: 150 }).onfinish = () => c.remove();
-        setTimeout(spawnChicken, rand(250, 900));
+        setTimeout(spawnChicken, rand(200, 600));
       }, life);
     }
 
@@ -427,7 +427,7 @@
       if (!chicken) return;
       const b = chicken.getBoundingClientRect();
       const cx = b.left + b.width / 2, cy = b.top + b.height / 2;
-      if (Math.hypot(cx - x, cy - y) > r + b.width * 0.3) {
+      if (Math.hypot(cx - x, cy - y) > r + b.width * 0.5) {
         pop("blam", "MISS", x, y - 40, [{ opacity: 1, transform: "scale(.6)" }, { opacity: 0, transform: "scale(1) translateY(-30px)" }], 600);
         return;
       }
