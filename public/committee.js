@@ -19,7 +19,10 @@ const committees = {
   development: {
     title: "Sick Development", icon: "⚡", accent: "#ca9fff",
     description: "Builds the site and the weekend’s digital surprises.",
-    members: []
+    members: [
+      { name: "Henning", video: "crew/henning.mp4", photo: "crew/henning.jpg", funFact: "digger skillpadder" },
+      { name: "Even", photo: "crew/even.jpg", funFact: "synes skillpadder er helt ok" }
+    ]
   },
   dinner: {
     title: "Dinner", icon: "🍳", accent: "#ffc780",
@@ -44,13 +47,24 @@ if (Object.hasOwn(committees, team)) {
   const roster = document.getElementById("roster");
   roster.hidden = false;
 
-  // Each member record has a name, a photo path relative to public/, and a funFact.
   if (members.length) {
     const list = document.getElementById("members");
     const template = document.getElementById("member-card");
-    for (const { name, photo, funFact } of members) {
+    for (const { name, photo, video, funFact } of members) {
       const card = template.content.cloneNode(true);
-      card.querySelector("img").src = photo;
+      const image = card.querySelector("img");
+      if (video) {
+        const player = document.createElement("video");
+        player.controls = true;
+        player.playsInline = true;
+        player.preload = "none";
+        player.poster = photo;
+        player.src = video;
+        player.setAttribute("aria-label", `${name}’s video`);
+        image.replaceWith(player);
+      } else {
+        image.src = photo;
+      }
       card.querySelector("h3").textContent = name;
       card.querySelector("span").textContent = funFact;
       list.append(card);

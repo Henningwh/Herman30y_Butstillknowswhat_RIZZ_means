@@ -23,7 +23,7 @@ h3 { font-size: 18px; overflow-wrap: anywhere; }
 .member-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr)); gap: 16px; margin: 0; padding: 0; list-style: none; }
 .member-grid[hidden] { display: none; }
 .member-card { overflow: hidden; border: 1px solid #ffffff38; border-radius: 18px; background: #ffffff0a; }
-.member-card img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: #20182f; }
+.member-card :is(img, video) { display: block; width: 100%; aspect-ratio: 9 / 16; object-fit: contain; background: #100c1c; }
 .member-card > div { padding: 18px; }
 .member-card p { margin: 10px 0 0; color: var(--muted); overflow-wrap: anywhere; }
 .member-card strong { display: block; color: var(--accent); }
