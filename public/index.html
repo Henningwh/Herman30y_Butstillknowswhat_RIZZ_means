@@ -124,18 +124,35 @@
   .committee { transition: transform .25s, border-color .25s, box-shadow .25s; overflow: hidden; }
   .committee:hover { transform: translateY(-6px) rotate(-.6deg); border-color: var(--c1); box-shadow: 0 10px 50px rgba(51,225,255,.18); }
   .committee .emoji { font-size: 40px; line-height: 1; display: block; margin-bottom: 10px; }
-  .committee .type { display: inline-block; font: 700 11px "Inter"; letter-spacing: .15em; text-transform: uppercase;
-                     color: var(--c2); margin-bottom: 6px; }
   .committee h3 { font-size: 20px; }
   .committee p { color: var(--muted); margin: 0; }
   .committee ul { list-style: none; padding: 0; margin: 14px 0 0; display: flex; flex-wrap: wrap; gap: 6px; }
   .committee li { border: 1px solid var(--line); border-radius: 999px; padding: 3px 12px; font-size: 14px; }
 
+  .committee[data-committee="development"] { background: linear-gradient(145deg, #201344, #100d20); border-color: #8157ff; }
+  .dev-art { display: grid; place-items: center; height: 122px; margin: -22px -22px 18px;
+    background: radial-gradient(ellipse at center, #6323a9 0%, transparent 67%),
+                repeating-linear-gradient(0deg, #ac6fff36 0 1px, transparent 1px 13px),
+                repeating-linear-gradient(90deg, #46dff43b 0 1px, transparent 1px 20px), #0c1029; }
+  .dev-art span { display: grid; place-items: center; width: 102px; height: 65px; border: 2px solid #55f4ff;
+    border-radius: 12px; background: #101435; color: #d4ffff; font: 700 32px/1 monospace;
+    box-shadow: 0 0 24px #22e2fca6, inset 0 0 18px #5429cc; transform: rotate(-8deg); }
+
   /* ---------- Info / Luggage ---------- */
-  .info-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+  .info-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); }
   .info-grid .card h3 { font-size: 15px; letter-spacing: .08em; text-transform: uppercase; color: var(--c1);
                         display: flex; gap: 10px; align-items: center; }
   .info-grid .card p { margin: 0; }
+  .info-block { margin-top: 40px; }
+  .info-block h3 { font-size: clamp(20px, 4vw, 30px); }
+  .info-block header p { margin: 0 0 16px; color: var(--muted); }
+  .films { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); }
+  .film { overflow: hidden; padding: 0; background: #10101b; }
+  .film h4 { margin: 0; padding: 18px 22px; border-top: 3px solid var(--c1);
+             background: repeating-linear-gradient(125deg, transparent 0 13px, rgba(255,255,255,.04) 13px 14px),
+                         linear-gradient(110deg, #232045, #10101b);
+             font: 700 clamp(15px, 2.5vw, 20px)/1.3 "Unbounded", sans-serif; }
+  .film video { display: block; width: 100%; aspect-ratio: 16 / 9; background: #000; }
   .steps { counter-reset: st; display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
   .steps .card { counter-increment: st; padding-top: 58px; }
   .steps .card::before { content: "0" counter(st); position: absolute; top: 16px; left: 22px;
@@ -304,36 +321,38 @@
         <p>Who does what. Everyone is on at least one.</p>
       </header>
       <div class="grid">
-        <div class="card committee r">
-          <span class="emoji">🍳</span><span class="type">Food</span>
-          <h3>Kitchen committee</h3>
-          <p>Plans the menu, shops and runs the kitchen.</p>
-          <ul><li>Name</li><li>Name</li><li>Name</li></ul>
-        </div>
-        <div class="card committee r">
-          <span class="emoji">🍻</span><span class="type">Drinks</span>
+        <article class="card committee r" data-committee="transport">
+          <span class="emoji" aria-hidden="true">🚚</span>
+          <h3>Transport committee</h3>
+          <p>Coordinates rides and gets everyone’s luggage to the cabin.</p>
+        </article>
+        <article class="card committee r" data-committee="lunch">
+          <span class="emoji" aria-hidden="true">🥪</span>
+          <h3>Lunch committee</h3>
+          <p>Plans lunch and makes sure there’s enough for everyone.</p>
+        </article>
+        <article class="card committee r" data-committee="party">
+          <span class="emoji" aria-hidden="true">🎉</span>
+          <h3>Party committee</h3>
+          <p>Runs the games, speeches and Saturday night program.</p>
+        </article>
+        <article class="card committee r" data-committee="development">
+          <div class="dev-art" aria-hidden="true">
+            <span>&lt;/&gt;</span>
+          </div>
+          <h3>Sick Development committee</h3>
+          <p>Builds the site and the weekend’s digital surprises.</p>
+        </article>
+        <article class="card committee r" data-committee="dinner">
+          <span class="emoji" aria-hidden="true">🍳</span>
+          <h3>Dinner committee</h3>
+          <p>Plans the dinner menu, shops and runs the kitchen.</p>
+        </article>
+        <article class="card committee r" data-committee="bar">
+          <span class="emoji" aria-hidden="true">🍻</span>
           <h3>Bar committee</h3>
           <p>Keeps the bar stocked and the glasses full.</p>
-          <ul><li>Name</li><li>Name</li></ul>
-        </div>
-        <div class="card committee r">
-          <span class="emoji">🎉</span><span class="type">Entertainment</span>
-          <h3>Party committee</h3>
-          <p>Games, speeches, the program for Saturday night.</p>
-          <ul><li>Name</li><li>Name</li></ul>
-        </div>
-        <div class="card committee r">
-          <span class="emoji">🚚</span><span class="type">Logistics</span>
-          <h3>Transport committee</h3>
-          <p>Luggage transport and getting everyone up and down.</p>
-          <ul><li>Name</li><li>Name</li></ul>
-        </div>
-        <div class="card committee r">
-          <span class="emoji">🧽</span><span class="type">Cleanup</span>
-          <h3>Cleaning committee</h3>
-          <p>Makes sure we get the cabin deposit back.</p>
-          <ul><li>Name</li><li>Name</li></ul>
-        </div>
+        </article>
       </div>
     </div>
   </section>
@@ -343,7 +362,7 @@
     <div class="wrap">
       <header class="pane-head r">
         <div class="num">04 / The boring stuff</div>
-        <h2>Practical</h2>
+        <h2>Practical Info</h2>
         <p>We rent the cabin together and split the cost.</p>
       </header>
       <div class="info-grid">
@@ -355,24 +374,32 @@
         <div class="card r"><h3>🎒 Bring</h3><p>Sleeping bag or sheets, indoor shoes, warm clothes, headlamp, <span class="todo">[…]</span></p></div>
         <div class="card r"><h3>☎️ Contact</h3><p><span class="todo">[name + phone]</span></p></div>
       </div>
-    </div>
-  </section>
+      <section class="info-block" aria-labelledby="films-title">
+        <h3 id="films-title">Cabin Cinema</h3>
+        <div class="films">
+          <article class="card film r">
+            <h4 id="cabin-tour-title">Inside Studenterhytta</h4>
+            <video controls playsinline preload="none" poster="videos/studenterhytta.jpg" aria-labelledby="cabin-tour-title">
+              <source src="videos/studenterhytta.mp4" type="video/mp4">
+              <a href="videos/studenterhytta.mp4">Download Inside Studenterhytta</a>
+            </video>
+          </article>
+        </div>
+      </section>
 
-  <!-- LUGGAGE -->
-  <section id="luggage" class="pane" data-label="LUGGAGE">
-    <div class="wrap">
-      <header class="pane-head r">
-        <div class="num">05 / Heavy lifting</div>
-        <h2>Luggage</h2>
-        <p>No road to the door – walk light, send the heavy stuff.</p>
-      </header>
-      <div class="steps">
-        <div class="card r"><h3>Drop off</h3><p><span class="todo">[where]</span>, <span class="todo">[day + time]</span></p></div>
-        <div class="card r"><h3>We drive it up</h3><p>Transported by <span class="todo">[car / name]</span></p></div>
-        <div class="card r"><h3>What to send</h3><p>Sleeping bag, drinks, heavy bags. Label everything with your name.</p></div>
-        <div class="card r"><h3>Carry yourself</h3><p>What you need for the hike in, plus valuables.</p></div>
-        <div class="card r"><h3>Going home</h3><p><span class="todo">[pick-up time and place on Sunday]</span></p></div>
-      </div>
+      <section id="luggage" class="info-block" aria-labelledby="luggage-title">
+        <header class="r">
+          <h3 id="luggage-title">Luggage</h3>
+          <p>No road to the door – walk light, send the heavy stuff.</p>
+        </header>
+        <div class="steps">
+          <div class="card r"><h3>Drop off</h3><p><span class="todo">[where]</span>, <span class="todo">[day + time]</span></p></div>
+          <div class="card r"><h3>We drive it up</h3><p>Transported by <span class="todo">[car / name]</span></p></div>
+          <div class="card r"><h3>What to send</h3><p>Sleeping bag, drinks, heavy bags. Label everything with your name.</p></div>
+          <div class="card r"><h3>Carry yourself</h3><p>What you need for the hike in, plus valuables.</p></div>
+          <div class="card r"><h3>Going home</h3><p><span class="todo">[pick-up time and place on Sunday]</span></p></div>
+        </div>
+      </section>
       <footer class="r">Made with love for Herman. Nobody tap the 30.</footer>
     </div>
   </section>
@@ -386,7 +413,6 @@
     <li><a href="#music"><span>🎵</span>Music</a></li>
     <li><a href="#committees"><span>👥</span>Crew</a></li>
     <li><a href="#info"><span>ℹ️</span>Info</a></li>
-    <li><a href="#luggage"><span>🧳</span>Luggage</a></li>
   </ul>
 </nav>
 
@@ -528,12 +554,14 @@
   const s1 = document.getElementById("saber1"), s2 = document.getElementById("saber2");
   const clash = document.getElementById("clash"), sparks = document.getElementById("sparks");
   const app = document.getElementById("app");
+  const videos = [...document.querySelectorAll(".film video")];
   let cur = -1, busy = false;
 
   // ---------- Pane switching ----------
   function show(i) {
     panes.forEach((p, j) => p.classList.toggle("active", j === i));
     links.forEach(a => a.classList.toggle("on", a.getAttribute("href") === "#" + ids[i]));
+    videos.filter(video => !panes[i].contains(video) && !video.paused).forEach(video => video.pause());
     panes[i].scrollTop = 0;
     cur = i;
     reveal(panes[i]);
@@ -652,8 +680,9 @@
   }
 
   async function go(i) {
-    if (i < 0 || i === cur || busy) return;
-    if (reduce || cur < 0) return show(i);
+    if (busy) return;
+    if (reduce || cur < 0 || i === cur) return showFromHash(i);
+    const requestedHash = location.hash;
     busy = true; fx.classList.add("busy");
     if (ids[i] === "music") {
       await chairHeist(() => show(i));
@@ -674,7 +703,7 @@
            { duration: 420, delay: 200, easing: "cubic-bezier(.2,.8,.2,1)" }),
       clashP,
     ]);
-    show(i);
+    showFromHash(i);
     await new Promise(r => setTimeout(r, 120));
     await Promise.all([
       swordsOut(dir),
@@ -684,13 +713,20 @@
     ]);
     bars.forEach(b => b.getAnimations().forEach(a => a.cancel()));
     busy = false; fx.classList.remove("busy");
-    if (location.hash.slice(1) !== ids[cur]) go(ids.indexOf(location.hash.slice(1)));
+    if (location.hash !== requestedHash) go(fromHash());
   }
 
-  const fromHash = () => Math.max(0, ids.indexOf(location.hash.slice(1)));
+  const fromHash = () => Math.max(0, ids.indexOf(location.hash === "#luggage" ? "info" : location.hash.slice(1)));
+  function showFromHash(i) {
+    show(i);
+    if (location.hash === "#luggage" && ids[i] === "info") {
+      document.getElementById("luggage").scrollIntoView();
+    }
+  }
   addEventListener("hashchange", () => go(fromHash()));
   const nav = i => { if (!busy && i >= 0 && i < ids.length) location.hash = ids[i]; };
   addEventListener("keydown", e => {
+    if (e.target instanceof Element && e.target.closest("video")) return;
     if (e.key === "ArrowRight") nav(cur + 1);
     if (e.key === "ArrowLeft") nav(cur - 1);
   });
@@ -698,9 +734,9 @@
   app.addEventListener("touchstart", e => { tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, { passive: true });
   app.addEventListener("touchend", e => {
     const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
-    if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.5 && !e.target.closest("iframe")) nav(cur + (dx < 0 ? 1 : -1));
+    if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.5 && !e.target.closest("iframe, video")) nav(cur + (dx < 0 ? 1 : -1));
   }, { passive: true });
-  show(fromHash());
+  showFromHash(fromHash());
 
   // ---------- Countdown ----------
   const cd = document.getElementById("countdown");
@@ -800,7 +836,7 @@
   let idleTimer;
   function armIdle() {
     clearTimeout(idleTimer);
-    if (pop.hidden) idleTimer = setTimeout(openRizz, IDLE_MS);
+    if (pop.hidden && videos.every(video => video.paused || video.ended)) idleTimer = setTimeout(openRizz, IDLE_MS);
   }
   function openRizz() {
     frame.src = "rizz.html";
@@ -821,6 +857,9 @@
   });
   ["pointermove", "pointerdown", "keydown", "wheel", "touchstart", "scroll"].forEach(ev =>
     addEventListener(ev, armIdle, { passive: true, capture: true }));
+  videos.forEach(video => {
+    ["play", "pause", "ended"].forEach(event => video.addEventListener(event, armIdle));
+  });
   armIdle();
 })();
 </script>
