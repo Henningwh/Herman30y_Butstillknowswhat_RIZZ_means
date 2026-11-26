@@ -52,3 +52,17 @@ test("setup login is closed once a refresh token exists", async () => {
   assert.equal(r.status, 302);
   assert.match(r.headers.get("location"), /redirect_uri=https%3A%2F%2Fsite\.example%2Fapi%2Fspotify%2Fcallback/);
 });
+
+test("list reads the playlist newest first, handling item/track naming", async () => {
+  globalThis.fetch = async url => {
+    if (String(url).endsWith("/api/token")) return Response.json({ access_token: "AT", expires_in: 3600 });
+    if (String(url).includes("/items")) return Response.json({ items: [
+      { added_at: "2026-01-01T00:00:00Z", track: { name: "Old", artists: [{ name: "A" }], duration_ms: 61000 } },
+      { added_at: "2026-02-01T00:00:00Z", item: { name: "New", artists: [{ name: "B" }], duration_ms: 1000 } },
+      { added_at: "2026-03-01T00:00:00Z", track: null },
+    ] });
+    return new Response("?", { status: 500 });
+  };
+  const { tracks } = await (await call("/api/songs/list")).json();
+  assert.deepEqual(tracks.map(t => t.name), ["New", "Old"]);
+});

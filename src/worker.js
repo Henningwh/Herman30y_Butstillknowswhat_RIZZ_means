@@ -86,10 +86,38 @@ async function addTrack(env, uri) {
   if (!res.ok) throw new Error(`add failed (${res.status})`);
 }
 
+
+async function listTracks(env) {
+  const token = await accessToken(env);
+  const get = path => fetch(`${API}/playlists/${env.SPOTIFY_PLAYLIST_ID}/${path}?limit=100`, { headers: { authorization: `Bearer ${token}` } });
+  // Newer API name first ("items"), then the classic one ("tracks").
+  let res = await get("items");
+  if (res.status === 404 || res.status === 405) res = await get("tracks");
+  if (!res.ok) throw new Error(`list failed (${res.status})`);
+  const data = await res.json();
+  return (data.items || [])
+    .map(it => ({ at: it.added_at, t: it.track || it.item }))
+    .filter(x => x.t && x.t.name)
+    .map(({ at, t }) => ({
+      name: t.name,
+      artists: (t.artists || []).map(a => a.name).join(", "),
+      image: (t.album?.images || []).at(-1)?.url || "",
+      ms: t.duration_ms || 0,
+      added: at,
+      url: t.external_urls?.spotify || "",
+    }))
+    .sort((a, b) => String(b.added).localeCompare(String(a.added)));
+}
+
 async function handleApi(req, env, url) {
   const path = url.pathname;
 
   if (path === "/api/songs/status") return json({ enabled: configured(env) });
+
+  if (path === "/api/songs/list" && req.method === "GET") {
+    if (!configured(env)) return json({ error: "not configured" }, 503);
+    return json({ tracks: await listTracks(env) });
+  }
 
   if (path === "/api/songs/search" && req.method === "GET") {
     if (!configured(env)) return json({ error: "not configured" }, 503);

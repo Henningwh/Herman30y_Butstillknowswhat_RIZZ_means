@@ -120,6 +120,26 @@
   .add-btn.done { background: #39ff14; }
   .search-note { color: var(--muted); font-size: 14px; margin: 8px 0 0; min-height: 1.4em; }
 
+
+  /* ---------- Tracklist read from the playlist ---------- */
+  .tracklist[hidden] { display: none; }
+  .tracklist { margin-bottom: 16px; }
+  .tracklist h3 { font-size: 18px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+  .tracklist h3 small { font: 600 13px "Inter"; color: var(--muted); }
+  .tracks { list-style: none; margin: 0; padding: 0; counter-reset: tr; max-height: 460px; overflow-y: auto; scrollbar-width: thin; }
+  .tracks li { counter-increment: tr; display: flex; align-items: center; gap: 12px; padding: 8px 6px; border-radius: 12px; }
+  .tracks li:hover { background: rgba(255,255,255,.05); }
+  .tracks li::before { content: counter(tr); width: 22px; flex: none; text-align: right; color: var(--muted);
+                       font: 600 13px "Unbounded"; font-variant-numeric: tabular-nums; }
+  .tracks img { width: 44px; height: 44px; border-radius: 6px; flex: none; background: #222; }
+  .tracks .meta { min-width: 0; flex: 1; }
+  .tracks .meta a, .tracks .meta span { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tracks .meta a { color: var(--ink); font-weight: 700; text-decoration: none; }
+  .tracks .meta a:hover { color: var(--c1); }
+  .tracks .meta span { color: var(--muted); font-size: 14px; }
+  .tracks .dur { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; flex: none; }
+  .tracks li.fresh { background: linear-gradient(90deg, rgba(57,255,20,.18), transparent); }
+
   /* ---------- Committees ---------- */
   .committee { transition: transform .25s, border-color .25s, box-shadow .25s; overflow: hidden; }
   .committee:hover { transform: translateY(-6px) rotate(-.6deg); border-color: var(--c1); box-shadow: 0 10px 50px rgba(51,225,255,.18); }
@@ -287,6 +307,10 @@
         <input type="search" id="song-q" placeholder="Search for a song or artist…" autocomplete="off" enterkeyhint="search">
         <p class="search-note" id="song-note"></p>
         <ul class="results" id="song-results"></ul>
+      </div>
+      <div class="card tracklist r" id="tracklist" hidden>
+        <h3>🎶 On the playlist <small id="track-count"></small></h3>
+        <ol class="tracks" id="tracks"></ol>
       </div>
       <div class="card music-card r">
         <a class="btn" href="https://open.spotify.com/playlist/1KjXqBlUZ7ygePQzqCVNVn?si=5df037698fed4dd4&amp;pt=51a08893a253d85736e973c6d2f7d90c" id="playlist-link" target="_blank" rel="noopener"><span class="eq"><i></i><i></i><i></i></span> Open in Spotify &amp; add songs →</a>
@@ -756,9 +780,28 @@
       if (!st.enabled) return;            // not set up yet: keep the box hidden
     } catch { return; }                  // static preview without the Worker
     box.hidden = false;
+    const esc = t => String(t).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+    const listCard = document.getElementById("tracklist"), listEl = document.getElementById("tracks"), countEl = document.getElementById("track-count");
+    const fmt = ms => `${Math.floor(ms / 60000)}:${String(Math.floor(ms / 1000) % 60).padStart(2, "0")}`;
+    async function loadList(freshName) {
+      try {
+        const { tracks } = await fetch("/api/songs/list").then(r => r.json());
+        if (!Array.isArray(tracks)) return;
+        listCard.hidden = false;
+        countEl.textContent = `${tracks.length} song${tracks.length === 1 ? "" : "s"}`;
+        listEl.innerHTML = tracks.length ? tracks.map(t => `<li${t.name === freshName ? ' class="fresh"' : ""}>
+          ${t.image ? `<img src="${esc(t.image)}" alt="" loading="lazy">` : `<img alt="">`}
+          <div class="meta"><a href="${esc(t.url)}" target="_blank" rel="noopener">${esc(t.name)}</a><span>${esc(t.artists)}</span></div>
+          <span class="dur">${fmt(t.ms)}</span></li>`).join("")
+          : `<li style="color:var(--muted)">Empty so far – be the first to add a banger.</li>`;
+        listEl.querySelectorAll("li").forEach((li, k) => li.animate(
+          [{ opacity: 0, transform: "translateX(-16px)" }, { opacity: 1, transform: "none" }],
+          { duration: 350, delay: Math.min(k, 12) * 35, easing: "ease-out", fill: "backwards" }));
+      } catch {}
+    }
     const q = document.getElementById("song-q"), list = document.getElementById("song-results"), note = document.getElementById("song-note");
     const player = document.querySelector(".music-card iframe");
-    const esc = t => t.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+    loadList();
     let timer, seq = 0;
     q.addEventListener("input", () => {
       clearTimeout(timer);
@@ -786,6 +829,7 @@
         if (!r.ok) throw 0;
         btn.textContent = "✓ Added"; btn.classList.add("done");
         note.textContent = `“${t.name}” is on the playlist 🎉`;
+        loadList(t.name);
         player.src = player.src.split("#")[0].replace(/([?&])_r=\d+/, "") + (player.src.includes("?") ? "&" : "?") + "_r=" + Date.now();
       } catch {
         btn.disabled = false; btn.textContent = "+ Add"; note.textContent = "Couldn't add that one – try again.";
