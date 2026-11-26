@@ -1,6 +1,7 @@
-(() => {
-  const art = document.querySelector(".dev-art");
-  const trigger = document.querySelector(".dev-trigger");
+export function mountDevSticker(container) {
+  const art = container.querySelector(".dev-art");
+  const trigger = container.querySelector(".dev-trigger");
+  const chain = container.querySelector(".chain-trigger");
   const canvas = art.querySelector("canvas");
   const context = canvas.getContext("2d");
   const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
@@ -105,4 +106,18 @@
   trigger.addEventListener("click", () => ignite(0.5, 0.5));
   art.dataset.interactive = "";
   trigger.hidden = false;
-})();
+
+  if (chain) {
+    chain.hidden = false;
+    chain.addEventListener("click", () => {
+      ignite(0.5, 0.5);
+      if (reducedMotion.matches) return;
+      chain.disabled = true;
+      const positions = [[0.28, 0.58], [0.72, 0.42], [0.4, 0.32], [0.62, 0.7], [0.5, 0.5]];
+      positions.forEach(([x, y], index) => {
+        setTimeout(() => ignite(x, y), (index + 1) * 145);
+      });
+      setTimeout(() => { chain.disabled = false; }, positions.length * 145 + life);
+    });
+  }
+}
