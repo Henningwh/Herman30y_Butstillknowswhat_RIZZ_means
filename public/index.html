@@ -168,6 +168,18 @@
   footer { text-align: center; color: var(--muted); font-size: 13px; padding-top: 40px; }
 
 
+
+  /* ---------- Music transition: cutout-style chair heist ---------- */
+  .heist { position: fixed; inset: 0; z-index: 11; background: #7ec8f2; overflow: hidden; cursor: pointer; }
+  .heist[hidden] { display: none; }
+  .heist svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .heist .grain { position: absolute; opacity: .16; }
+  .heist-title { position: absolute; left: 50%; top: 7%; translate: -50% 0; z-index: 2; opacity: 0;
+                 background: #fffef6; color: #111; padding: 10px 18px; font: 800 clamp(16px, 3.4vw, 30px) "Unbounded";
+                 box-shadow: 3px 4px 0 rgba(0,0,0,.3); white-space: nowrap; }
+  .heist-skip { position: absolute; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); z-index: 2;
+                font: 600 12px "Inter"; color: #123; opacity: .6; }
+
   /* ---------- Idle easter egg: the rizz page takes over ---------- */
   #rizz-pop { position: fixed; inset: 0; z-index: 100; background: #000; }
   #rizz-pop[hidden] { display: none; }
@@ -356,6 +368,91 @@
   <div class="sparks" id="sparks"></div>
 </div>
 
+
+<div class="heist" id="heist" hidden aria-hidden="true">
+  <div class="heist-title">Meanwhile, at Studenterhytta…</div>
+  <svg id="heist-svg" viewBox="0 0 800 450" preserveAspectRatio="xMidYMax slice">
+    <defs>
+      <filter id="cut" x="-10%" y="-10%" width="130%" height="130%"><feDropShadow dx="2" dy="3" stdDeviation="0" flood-color="#000" flood-opacity=".28"/></filter>
+      <g id="tree"><rect x="-5" y="-14" width="10" height="16" fill="#6b4a2e"/>
+        <polygon points="-34,-12 0,-70 34,-12" fill="#2e6b3d"/><polygon points="-27,-48 0,-100 27,-48" fill="#357a45"/>
+        <polygon points="-19,-82 0,-122 19,-82" fill="#3c8a4e"/><polygon points="-10,-108 0,-126 10,-108" fill="#fff"/></g>
+    </defs>
+    <polygon filter="url(#cut)" fill="#e3ebf3" points="0,330 110,190 210,290 330,160 460,300 570,180 690,290 800,200 800,400 0,400"/>
+    <polygon fill="#fff" points="95,209 110,190 126,210 116,206 110,214 102,206"/>
+    <polygon fill="#fff" points="312,184 330,160 349,186 338,181 330,190 321,181"/>
+    <polygon fill="#fff" points="554,201 570,180 587,203 576,198 570,206 562,198"/>
+    <g filter="url(#cut)">
+      <use href="#tree" transform="translate(30 392) scale(1.1)"/><use href="#tree" transform="translate(262 388) scale(.8)"/>
+      <use href="#tree" transform="translate(600 390) scale(.9)"/><use href="#tree" transform="translate(690 394) scale(1.2)"/>
+      <use href="#tree" transform="translate(770 390) scale(.95)"/>
+    </g>
+    <g filter="url(#cut)">
+      <rect x="70" y="300" width="150" height="92" fill="#b5372b"/>
+      <polygon points="56,308 145,248 234,308" fill="#3a2a24"/>
+      <polygon points="56,308 145,248 234,308 228,312 145,256 62,312" fill="#fff"/>
+      <rect x="128" y="340" width="32" height="52" fill="#6b2a1f"/>
+      <rect x="86" y="322" width="28" height="24" fill="#ffd85a"/><rect x="176" y="322" width="28" height="24" fill="#ffd85a"/>
+      <rect x="108" y="312" width="72" height="14" fill="#fffef6"/>
+      <text x="144" y="322.5" font-family="Unbounded, sans-serif" font-size="7.5" font-weight="800" text-anchor="middle" fill="#111">STUDENTERHYTTA</text>
+    </g>
+    <path d="M0,392 Q200,380 400,390 T800,388 V450 H0 Z" fill="#fbfdff" filter="url(#cut)"/>
+
+    <!-- the chair -->
+    <g id="h-chair" filter="url(#cut)" style="transform: translate(450px, 400px)">
+      <rect x="-30" y="-115" width="8" height="66" fill="#7b4a1f"/><rect x="22" y="-115" width="8" height="66" fill="#7b4a1f"/>
+      <rect x="-30" y="-112" width="60" height="11" fill="#a0642d"/><rect x="-30" y="-90" width="60" height="9" fill="#a0642d"/>
+      <rect x="-30" y="-50" width="8" height="50" fill="#7b4a1f"/><rect x="22" y="-50" width="8" height="50" fill="#7b4a1f"/>
+      <rect x="-36" y="-57" width="72" height="10" rx="2" fill="#b8763a"/>
+    </g>
+
+    <!-- the chair thief (feet at 0,0) -->
+    <g id="h-guy" filter="url(#cut)" style="transform: translate(-120px, 400px)">
+      <g id="h-guy-in">
+        <rect x="-36" y="-22" width="28" height="18" fill="#2f3140"/><rect x="8" y="-22" width="28" height="18" fill="#2f3140"/>
+        <ellipse cx="-24" cy="-4" rx="19" ry="7" fill="#151515"/><ellipse cx="24" cy="-4" rx="19" ry="7" fill="#151515"/>
+        <path d="M-46,-92 L46,-92 L58,-20 L-58,-20 Z" fill="#6f9bd1"/>
+        <line x1="0" y1="-90" x2="0" y2="-22" stroke="#5a84b8" stroke-width="2.5"/>
+        <g id="h-arms-down" stroke="#6f9bd1" stroke-width="17" stroke-linecap="round" fill="#f2c6ad">
+          <polyline points="-46,-84 -60,-40" fill="none"/><polyline points="46,-84 60,-40" fill="none"/>
+          <circle cx="-60" cy="-36" r="9" stroke="none"/><circle cx="60" cy="-36" r="9" stroke="none"/>
+        </g>
+        <circle cx="-63" cy="-136" r="11" fill="#efbfa5"/><circle cx="63" cy="-136" r="11" fill="#efbfa5"/>
+        <ellipse cx="0" cy="-140" rx="64" ry="58" fill="#f2c6ad"/>
+        <path d="M-63,-148 C-68,-204 -30,-214 0,-212 C30,-214 68,-204 63,-148 L56,-160 L40,-167 L22,-164 L4,-169 L-16,-164 L-36,-168 L-56,-160 Z" fill="#7b5a3c"/>
+        <ellipse cx="-17" cy="-134" rx="17" ry="20" fill="#fff"/><ellipse cx="17" cy="-134" rx="17" ry="20" fill="#fff"/>
+        <g id="h-pupils">
+          <circle cx="-12" cy="-131" r="6.5" fill="#4fa3c7"/><circle cx="12" cy="-131" r="6.5" fill="#4fa3c7"/>
+          <circle cx="-12" cy="-131" r="3" fill="#111"/><circle cx="12" cy="-131" r="3" fill="#111"/>
+        </g>
+        <line x1="-36" y1="-157" x2="-6" y2="-151" stroke="#5a3e26" stroke-width="6.5" stroke-linecap="round"/>
+        <line x1="36" y1="-157" x2="6" y2="-151" stroke="#5a3e26" stroke-width="6.5" stroke-linecap="round"/>
+        <path d="M-9,-104 Q2,-99 13,-104 Q2,-95 -9,-104 Z" fill="#c95a4f"/>
+        <polygon points="-48,-90 -40,-113 -14,-91" fill="#8db4e6"/><polygon points="48,-90 40,-113 14,-91" fill="#8db4e6"/>
+        <path d="M-17,-91 Q0,-70 17,-91" fill="none" stroke="#d6dadd" stroke-width="3.5" stroke-dasharray="3 2.5"/>
+        <g id="h-arms-up" opacity="0" stroke="#6f9bd1" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" fill="#f2c6ad">
+          <polyline points="-46,-84 -86,-150 -36,-204" fill="none"/><polyline points="46,-84 86,-150 36,-204" fill="none"/>
+          <circle cx="-34" cy="-207" r="9" stroke="none"/><circle cx="34" cy="-207" r="9" stroke="none"/>
+        </g>
+      </g>
+    </g>
+
+    <g id="h-b1" opacity="0" filter="url(#cut)">
+      <rect x="305" y="94" width="190" height="62" rx="16" fill="#fff" stroke="#111" stroke-width="3"/>
+      <polygon points="366,154 386,154 370,176" fill="#fff" stroke="#111" stroke-width="3" stroke-linejoin="round"/>
+      <rect x="364" y="150" width="24" height="6" fill="#fff"/>
+      <text font-family="Unbounded, sans-serif" font-weight="800" font-size="15" text-anchor="middle" fill="#111">
+        <tspan x="400" y="120">Nobody's gonna</tspan><tspan x="400" y="142">notice…</tspan></text>
+    </g>
+    <g id="h-b2" opacity="0" filter="url(#cut)">
+      <rect x="300" y="26" width="170" height="44" rx="14" fill="#ffd23f" stroke="#111" stroke-width="3"/>
+      <text x="385" y="55" font-family="Unbounded, sans-serif" font-weight="900" font-size="18" text-anchor="middle" fill="#111">MINE NOW.</text>
+    </g>
+  </svg>
+  <div class="grain"></div>
+  <div class="heist-skip">tap to skip</div>
+</div>
+
 <div id="rizz-pop" hidden><iframe title="Hard Rizz" id="rizz-frame"></iframe></div>
 
 <script>
@@ -437,10 +534,70 @@
     [s1, s2].forEach(s => (s.style.opacity = 0));
   }
 
+
+  // ---------- Music transition: the chair heist (cutout stop-motion) ----------
+  async function chairHeist(swap) {
+    const heist = document.getElementById("heist");
+    const $ = id => document.getElementById(id);
+    const guy = $("h-guy"), inner = $("h-guy-in"), chair = $("h-chair"), pupils = $("h-pupils");
+    const up = $("h-arms-up"), down = $("h-arms-down"), b1 = $("h-b1"), b2 = $("h-b2");
+    const title = heist.querySelector(".heist-title");
+    const A = [];
+    const a = (el, kf, o) => { const x = el.animate(kf, { fill: "forwards", ...o }); A.push(x); return x; };
+    const P = (x, y, r = 0) => `translate(${x}px, ${y}px) rotate(${r}deg)`;
+    const bob = (h, r) => [
+      { transform: `translateY(0) rotate(${-r}deg)`, offset: 0 }, { transform: `translateY(0) rotate(${-r}deg)`, offset: .5 },
+      { transform: `translateY(${-h}px) rotate(${r}deg)`, offset: .5 }, { transform: `translateY(${-h}px) rotate(${r}deg)`, offset: 1 }];
+    const showFor = (el, delay, dur) => a(el, [{ opacity: 0 }, { opacity: 1, offset: .04 }, { opacity: 1, offset: .96 }, { opacity: 0 }],
+                                           { delay, duration: dur, easing: "linear" });
+
+    // Fit the action (x 250-560) on narrow screens; wide screens show the whole 800x450 scene.
+    const asp = innerWidth / innerHeight, w = Math.max(310, Math.min(800, 450 * asp)), h = Math.max(450, w / asp);
+    $("heist-svg").setAttribute("viewBox", `${Math.max(0, Math.min(800 - w, 405 - w / 2))} ${450 - h} ${w} ${h}`);
+    heist.hidden = false;
+    heist.onpointerdown = () => A.forEach(x => x.finish());
+    await heist.animate([{ clipPath: "circle(0% at 50% 50%)" }, { clipPath: "circle(150% at 50% 50%)" }],
+                        { duration: 380, easing: "cubic-bezier(.7,0,.3,1)" }).finished;
+
+    a(title, [{ opacity: 0, transform: "rotate(-3deg) scale(.5)" }, { opacity: 1, transform: "rotate(-2deg) scale(1)" }], { duration: 240, easing: "steps(3)" });
+    // 1. sneak in
+    a(guy, [{ transform: P(-120, 400) }, { transform: P(360, 400) }], { duration: 1200, easing: "steps(9)", fill: "both" });
+    a(inner, bob(10, 6), { duration: 260, iterations: 4.6, fill: "none" });
+    // 2. look around
+    showFor(b1, 1250, 1000);
+    a(pupils, [{ transform: "translateX(0)", offset: 0 }, { transform: "translateX(0)", offset: .1 },
+               { transform: "translateX(-7px)", offset: .1 }, { transform: "translateX(-7px)", offset: .45 },
+               { transform: "translateX(7px)", offset: .45 }, { transform: "translateX(7px)", offset: .85 },
+               { transform: "translateX(0)", offset: .85 }, { transform: "translateX(0)", offset: 1 }],
+      { delay: 1350, duration: 900, easing: "linear" });
+    // 3. grab the chair
+    a(down, [{ opacity: 1 }, { opacity: 0 }], { delay: 2300, duration: 1 });
+    a(up, [{ opacity: 0 }, { opacity: 1 }], { delay: 2300, duration: 1 });
+    a(chair, [{ transform: P(450, 400) }, { transform: P(360, 194, -6) }], { delay: 2300, duration: 240, easing: "steps(3)" });
+    showFor(b2, 2500, 750);
+    // 4. leg it
+    a(guy, [{ transform: P(360, 400) }, { transform: P(1000, 400) }], { delay: 2950, duration: 650, easing: "steps(7)" });
+    a(chair, [{ transform: P(360, 194, -6) }, { transform: P(1000, 194, -6) }], { delay: 2950, duration: 650, easing: "steps(7)" });
+    a(inner, bob(16, 9), { delay: 2950, duration: 160, iterations: 4, fill: "none" });
+
+    await Promise.all(A.map(x => x.finished));
+    swap();
+    await heist.animate([{ clipPath: "circle(150% at 50% 50%)" }, { clipPath: "circle(0% at 50% 50%)" }],
+                        { duration: 450, easing: "cubic-bezier(.7,0,.3,1)" }).finished;
+    heist.hidden = true;
+    A.forEach(x => x.cancel());
+  }
+
   async function go(i) {
     if (i < 0 || i === cur || busy) return;
     if (reduce || cur < 0) return show(i);
     busy = true; fx.classList.add("busy");
+    if (ids[i] === "music") {
+      await chairHeist(() => show(i));
+      busy = false; fx.classList.remove("busy");
+      if (location.hash.slice(1) !== ids[cur]) go(ids.indexOf(location.hash.slice(1)));
+      return;
+    }
     const dir = i > cur ? 1 : -1;
     label.textContent = panes[i].dataset.label;
     const order = dir > 0 ? bars : [...bars].reverse();
