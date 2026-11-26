@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#0b0916">
+  <title>Committee – Herman 30</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Unbounded:wght@600;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="dev-sticker.css">
+  <link rel="stylesheet" href="committee.css">
+</head>
+<body>
+  <main class="committee-page">
+    <a class="back-link" href="index.html#committees">All committees</a>
+    <header class="committee-hero">
+      <span class="committee-icon" aria-hidden="true"></span>
+      <h1>Committee</h1>
+      <p id="committee-description">Choose a committee from the Crew tab.</p>
+    </header>
+
+    <section id="roster" hidden aria-labelledby="roster-title">
+      <h2 id="roster-title">Members</h2>
+      <p id="roster-empty">The roster is coming soon.</p>
+      <ul id="members" class="member-grid" hidden></ul>
+    </section>
+
+    <template id="development-art">
+      <div class="reactor">
+        <div class="dev-art" aria-hidden="true">
+          <span class="reactor-ring"></span>
+          <span class="dev-orbit"></span>
+          <span class="dev-orbit"></span>
+          <span class="dev-core">&lt;/&gt;</span>
+          <canvas class="dev-bursts"></canvas>
+        </div>
+        <div class="reactor-controls">
+          <button class="dev-trigger" type="button" hidden>⚡ Overclock</button>
+          <button class="dev-trigger chain-trigger" type="button" hidden>Chain reaction</button>
+        </div>
+      </div>
+    </template>
+
+    <template id="member-card">
+      <li class="member-card">
+        <img loading="lazy" alt="">
+        <div>
+          <h3></h3>
+          <p><strong>Fun fact</strong> <span></span></p>
+        </div>
+      </li>
+    </template>
+  </main>
+  <script type="module" src="committee.js"></script>
+</body>
+</html>

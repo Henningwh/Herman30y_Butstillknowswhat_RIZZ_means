@@ -6,16 +6,32 @@ const html = readFileSync("public/index.html", "utf8");
 const rizz = readFileSync("public/rizz.html", "utf8");
 
 test("main page has all sections", () => {
-  for (const id of ["agenda", "music", "committees", "info", "luggage"]) {
+  for (const id of ["agenda", "music", "committees", "info"]) {
     assert.match(html, new RegExp(`<section id="${id}"`));
   }
   assert.match(html, /Studenterhytta/);
+  assert.match(html, /<section id="info"[\s\S]*?<section id="luggage" class="info-block"/);
+  assert.doesNotMatch(html, /<nav[\s\S]*?href="#luggage"[\s\S]*?<\/nav>/);
 });
 
 test("pages have titles and are not indexed", () => {
   assert.match(html, /<title>[^<]+<\/title>/);
   assert.match(rizz, /<title>[^<]+<\/title>/);
   assert.match(readFileSync("public/_headers", "utf8"), /noindex/);
+});
+
+test("Cabin Cinema references local video and poster files", () => {
+  const films = html.match(/<section class="info-block" aria-labelledby="films-title">([\s\S]*?)<\/section>/);
+  assert.ok(films);
+  assert.match(films[1], /<video controls playsinline/);
+  for (const attribute of ["src", "poster"]) {
+    const assets = [...films[1].matchAll(new RegExp(`\\b${attribute}="(videos/[^"]+)"`, "g"))];
+    assert.ok(assets.length > 0);
+    for (const [, path] of assets) {
+      const file = readFileSync(`public/${path}`);
+      assert.ok(file.length > 0 && file.length <= 25 * 1024 * 1024, path);
+    }
+  }
 });
 
 test("easter egg links to the Hard Rizz page", () => {
