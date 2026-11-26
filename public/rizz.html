@@ -403,7 +403,7 @@
       document.body.appendChild(c);
       c.animate([{ scale: 0 }, { scale: 1.25 }, { scale: 1 }], { duration: 220, easing: "ease-out" });
       chicken = c;
-      const life = rand(1200, 1900) - hits * 80; // a bit faster after each hit
+      const life = rand(1500, 2500) - hits * 80; // a bit faster after each hit
       c._timer = setTimeout(() => {
         if (chicken !== c) return;
         chicken = null; c.classList.add("gone");
