@@ -9,7 +9,9 @@ const committees = {
   lunch: {
     title: "Lunch", icon: "🥪", accent: "#baef85",
     description: "Plans lunch and makes sure there’s enough for everyone.",
-    members: []
+    members: [
+      { name: "Henrik Buck Christoffersen", photo: "crew/henrik.png", funFact: "har aldri stekt noe mistenkelig. Aldri.", scene: "grill" }
+    ]
   },
   party: {
     title: "Party", icon: "🎉", accent: "#ff89dc",
@@ -50,7 +52,7 @@ if (Object.hasOwn(committees, team)) {
   if (members.length) {
     const list = document.getElementById("members");
     const template = document.getElementById("member-card");
-    for (const { name, photo, video, funFact } of members) {
+    for (const { name, photo, video, funFact, scene } of members) {
       const card = template.content.cloneNode(true);
       const image = card.querySelector("img");
       if (video) {
@@ -65,7 +67,17 @@ if (Object.hasOwn(committees, team)) {
       } else {
         image.src = photo;
       }
-      card.querySelector("h3").textContent = name;
+      const heading = card.querySelector("h3");
+      if (scene === "grill") {
+        // Clicking the name plays the "caught grilling" cutout scene.
+        const btn = document.createElement("button");
+        btn.type = "button"; btn.className = "member-scene"; btn.textContent = name;
+        btn.title = "Click me";
+        btn.addEventListener("click", async () => (await import("./grill-scene.js")).playGrillScene());
+        heading.append(btn);
+      } else {
+        heading.textContent = name;
+      }
       card.querySelector("span").textContent = funFact;
       list.append(card);
     }
