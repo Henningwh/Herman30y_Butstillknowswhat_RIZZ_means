@@ -38,3 +38,5 @@ Cloudflare Workers Builds deploys this repo. No API token is stored in the repo 
 - `wrangler.jsonc` serves `./dist` as static assets, with `workers_dev: true` and `preview_urls: false`.
 - `public/_headers` sets noindex and caching headers.
 - CI (`.github/workflows/ci.yml`) runs `npm ci`, `npm test`, `npm run build` and `npx wrangler deploy --dry-run`, which needs no token.
+
+.
