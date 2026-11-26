@@ -177,6 +177,8 @@
   .heist-title { position: absolute; left: 50%; top: 7%; translate: -50% 0; z-index: 2; opacity: 0;
                  background: #fffef6; color: #111; padding: 10px 18px; font: 800 clamp(16px, 3.4vw, 30px) "Unbounded";
                  box-shadow: 3px 4px 0 rgba(0,0,0,.3); white-space: nowrap; }
+  #h-top { transform-origin: 44px -110px; }
+  #h-head { transform-origin: 0 -160px; }
   .heist-skip { position: absolute; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); z-index: 2;
                 font: 600 12px "Inter"; color: #123; opacity: .6; }
 
@@ -417,36 +419,30 @@
           <polyline points="-46,-84 -60,-40" fill="none"/><polyline points="46,-84 60,-40" fill="none"/>
           <circle cx="-60" cy="-36" r="9" stroke="none"/><circle cx="60" cy="-36" r="9" stroke="none"/>
         </g>
-        <circle cx="-63" cy="-136" r="11" fill="#efbfa5"/><circle cx="63" cy="-136" r="11" fill="#efbfa5"/>
-        <ellipse cx="0" cy="-140" rx="64" ry="58" fill="#f2c6ad"/>
-        <path d="M-63,-148 C-68,-204 -30,-214 0,-212 C30,-214 68,-204 63,-148 L56,-160 L40,-167 L22,-164 L4,-169 L-16,-164 L-36,-168 L-56,-160 Z" fill="#7b5a3c"/>
-        <ellipse cx="-17" cy="-134" rx="17" ry="20" fill="#fff"/><ellipse cx="17" cy="-134" rx="17" ry="20" fill="#fff"/>
-        <g id="h-pupils">
-          <circle cx="-12" cy="-131" r="6.5" fill="#4fa3c7"/><circle cx="12" cy="-131" r="6.5" fill="#4fa3c7"/>
-          <circle cx="-12" cy="-131" r="3" fill="#111"/><circle cx="12" cy="-131" r="3" fill="#111"/>
+        <g id="h-head">
+          <rect x="-33" y="-121" width="62" height="11" rx="5" fill="#2a0606"/>
+          <image href="thief-jaw.png" x="-70" y="-243" width="140" height="161"/>
+          <g id="h-top"><image href="thief-top.png" x="-70" y="-243" width="140" height="161"/></g>
         </g>
-        <line x1="-36" y1="-157" x2="-6" y2="-151" stroke="#5a3e26" stroke-width="6.5" stroke-linecap="round"/>
-        <line x1="36" y1="-157" x2="6" y2="-151" stroke="#5a3e26" stroke-width="6.5" stroke-linecap="round"/>
-        <path d="M-9,-104 Q2,-99 13,-104 Q2,-95 -9,-104 Z" fill="#c95a4f"/>
         <polygon points="-48,-90 -40,-113 -14,-91" fill="#8db4e6"/><polygon points="48,-90 40,-113 14,-91" fill="#8db4e6"/>
         <path d="M-17,-91 Q0,-70 17,-91" fill="none" stroke="#d6dadd" stroke-width="3.5" stroke-dasharray="3 2.5"/>
         <g id="h-arms-up" opacity="0" stroke="#6f9bd1" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" fill="#f2c6ad">
-          <polyline points="-46,-84 -86,-150 -36,-204" fill="none"/><polyline points="46,-84 86,-150 36,-204" fill="none"/>
-          <circle cx="-34" cy="-207" r="9" stroke="none"/><circle cx="34" cy="-207" r="9" stroke="none"/>
+          <polyline points="-46,-84 -96,-168 -36,-246" fill="none"/><polyline points="46,-84 96,-168 36,-246" fill="none"/>
+          <circle cx="-34" cy="-249" r="9" stroke="none"/><circle cx="34" cy="-249" r="9" stroke="none"/>
         </g>
       </g>
     </g>
 
     <g id="h-b1" opacity="0" filter="url(#cut)">
-      <rect x="305" y="94" width="190" height="62" rx="16" fill="#fff" stroke="#111" stroke-width="3"/>
-      <polygon points="366,154 386,154 370,176" fill="#fff" stroke="#111" stroke-width="3" stroke-linejoin="round"/>
-      <rect x="364" y="150" width="24" height="6" fill="#fff"/>
+      <rect x="305" y="64" width="190" height="62" rx="16" fill="#fff" stroke="#111" stroke-width="3"/>
+      <polygon points="366,124 386,124 370,146" fill="#fff" stroke="#111" stroke-width="3" stroke-linejoin="round"/>
+      <rect x="364" y="120" width="24" height="6" fill="#fff"/>
       <text font-family="Unbounded, sans-serif" font-weight="800" font-size="15" text-anchor="middle" fill="#111">
-        <tspan x="400" y="120">Nobody's gonna</tspan><tspan x="400" y="142">notice…</tspan></text>
+        <tspan x="400" y="90">Nobody's gonna</tspan><tspan x="400" y="112">notice…</tspan></text>
     </g>
     <g id="h-b2" opacity="0" filter="url(#cut)">
-      <rect x="300" y="26" width="170" height="44" rx="14" fill="#ffd23f" stroke="#111" stroke-width="3"/>
-      <text x="385" y="55" font-family="Unbounded, sans-serif" font-weight="900" font-size="18" text-anchor="middle" fill="#111">MINE NOW.</text>
+      <rect x="398" y="70" width="156" height="44" rx="14" fill="#ffd23f" stroke="#111" stroke-width="3"/>
+      <text x="476" y="99" font-family="Unbounded, sans-serif" font-weight="900" font-size="18" text-anchor="middle" fill="#111">MINE NOW.</text>
     </g>
   </svg>
   <div class="grain"></div>
@@ -539,7 +535,7 @@
   async function chairHeist(swap) {
     const heist = document.getElementById("heist");
     const $ = id => document.getElementById(id);
-    const guy = $("h-guy"), inner = $("h-guy-in"), chair = $("h-chair"), pupils = $("h-pupils");
+    const guy = $("h-guy"), inner = $("h-guy-in"), chair = $("h-chair"), headEl = $("h-head"), skull = $("h-top");
     const up = $("h-arms-up"), down = $("h-arms-down"), b1 = $("h-b1"), b2 = $("h-b2");
     const title = heist.querySelector(".heist-title");
     const A = [];
@@ -560,24 +556,29 @@
                         { duration: 380, easing: "cubic-bezier(.7,0,.3,1)" }).finished;
 
     a(title, [{ opacity: 0, transform: "rotate(-3deg) scale(.5)" }, { opacity: 1, transform: "rotate(-2deg) scale(1)" }], { duration: 240, easing: "steps(3)" });
+    a(title, [{ opacity: 1 }, { opacity: 0 }], { delay: 2000, duration: 200, easing: "steps(2)" });
     // 1. sneak in
     a(guy, [{ transform: P(-120, 400) }, { transform: P(360, 400) }], { duration: 1200, easing: "steps(9)", fill: "both" });
     a(inner, bob(10, 6), { duration: 260, iterations: 4.6, fill: "none" });
     // 2. look around
     showFor(b1, 1250, 1000);
-    a(pupils, [{ transform: "translateX(0)", offset: 0 }, { transform: "translateX(0)", offset: .1 },
-               { transform: "translateX(-7px)", offset: .1 }, { transform: "translateX(-7px)", offset: .45 },
-               { transform: "translateX(7px)", offset: .45 }, { transform: "translateX(7px)", offset: .85 },
-               { transform: "translateX(0)", offset: .85 }, { transform: "translateX(0)", offset: 1 }],
-      { delay: 1350, duration: 900, easing: "linear" });
+    const flap = (delay, n, ms) => a(skull, [{ transform: "rotate(0deg)", offset: 0 }, { transform: "rotate(0deg)", offset: .5 },
+      { transform: "rotate(-22deg)", offset: .5 }, { transform: "rotate(-22deg)", offset: 1 }],
+      { delay, duration: ms, iterations: n, fill: "none" });
+    flap(1250, 5, 190);
+    a(headEl, [{ transform: "scaleX(1)", offset: 0 }, { transform: "scaleX(1)", offset: .3 },
+               { transform: "scaleX(-1)", offset: .3 }, { transform: "scaleX(-1)", offset: .7 },
+               { transform: "scaleX(1)", offset: .7 }, { transform: "scaleX(1)", offset: 1 }],
+      { delay: 1300, duration: 1000, easing: "linear" });
     // 3. grab the chair
     a(down, [{ opacity: 1 }, { opacity: 0 }], { delay: 2300, duration: 1 });
     a(up, [{ opacity: 0 }, { opacity: 1 }], { delay: 2300, duration: 1 });
-    a(chair, [{ transform: P(450, 400) }, { transform: P(360, 194, -6) }], { delay: 2300, duration: 240, easing: "steps(3)" });
+    a(chair, [{ transform: P(450, 400) }, { transform: P(360, 152, -6) }], { delay: 2300, duration: 240, easing: "steps(3)" });
     showFor(b2, 2500, 750);
+    flap(2500, 4, 180);
     // 4. leg it
     a(guy, [{ transform: P(360, 400) }, { transform: P(1000, 400) }], { delay: 2950, duration: 650, easing: "steps(7)" });
-    a(chair, [{ transform: P(360, 194, -6) }, { transform: P(1000, 194, -6) }], { delay: 2950, duration: 650, easing: "steps(7)" });
+    a(chair, [{ transform: P(360, 152, -6) }, { transform: P(1000, 152, -6) }], { delay: 2950, duration: 650, easing: "steps(7)" });
     a(inner, bob(16, 9), { delay: 2950, duration: 160, iterations: 4, fill: "none" });
 
     await Promise.all(A.map(x => x.finished));

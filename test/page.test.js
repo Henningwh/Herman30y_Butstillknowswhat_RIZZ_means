@@ -34,6 +34,13 @@ test("idle easter egg opens the rizz page after a minute", () => {
   assert.match(html, /rizz-escaped/);
 });
 
+test("music transition uses the cut-out photo head", () => {
+  assert.match(html, /thief-top\.png/);
+  assert.match(html, /thief-jaw\.png/);
+  assert.ok(readFileSync("public/thief-top.png").length > 1000);
+  assert.ok(readFileSync("public/thief-jaw.png").length > 1000);
+});
+
 test("rizz page has the chicken game to escape", () => {
   assert.match(rizz, /const NEED = 3/);
   assert.match(rizz, /rizz-escaped/);
