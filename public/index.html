@@ -2,251 +2,523 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#07070d">
 <title>Herman 30 – Studenterhytta</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;800;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #f6f1e7; --card: #fffdf8; --ink: #1f2a24; --muted: #5d6b62;
-    --accent: #2f5d45; --accent-2: #b5562f; --line: #e2d9c8;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root { --bg: #141a16; --card: #1c241f; --ink: #ece6da; --muted: #a3ada5;
-            --accent: #7fb896; --accent-2: #e08a5f; --line: #2c3730; }
+    --bg: #07070d; --ink: #f3f1ff; --muted: #9a98b8;
+    --c1: #33e1ff; --c2: #ff2bd6; --c3: #ffd23f; --c4: #7c5cff;
+    --glass: rgba(255,255,255,.05); --line: rgba(255,255,255,.12);
+    --nav-h: 76px;
   }
   * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; scroll-padding-top: 64px; }
-  body { margin: 0; background: var(--bg); color: var(--ink);
-         font: 16px/1.55 "Inter", system-ui, sans-serif; }
-  h1, h2, h3 { font-family: "Fraunces", Georgia, serif; line-height: 1.15; margin: 0 0 .5em; }
+  html, body { margin: 0; height: 100%; overflow: hidden; }
+  body { background: var(--bg); color: var(--ink); font: 16px/1.55 "Inter", system-ui, sans-serif;
+         -webkit-font-smoothing: antialiased; }
+  h1, h2, h3 { font-family: "Unbounded", "Inter", sans-serif; line-height: 1.05; margin: 0 0 .4em; }
+  a { color: var(--c1); }
 
-  nav { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--bg) 90%, transparent);
-        backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
-  nav ul { list-style: none; margin: 0 auto; padding: 0 16px; max-width: 900px;
-           display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
-  nav a { display: block; padding: 14px 10px; color: var(--muted); text-decoration: none;
-          font-weight: 600; font-size: 14px; white-space: nowrap; }
-  nav a:hover { color: var(--accent); }
+  /* ---------- Background: stars + aurora + grain ---------- */
+  #stars { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; }
+  .aurora { position: fixed; inset: -20%; z-index: 0; pointer-events: none; filter: blur(80px); opacity: .55; }
+  .aurora i { position: absolute; width: 50vmax; height: 50vmax; border-radius: 50%; mix-blend-mode: screen;
+              animation: drift 22s ease-in-out infinite alternate; }
+  .aurora i:nth-child(1) { background: var(--c4); left: 0; top: 10%; }
+  .aurora i:nth-child(2) { background: var(--c2); right: 0; top: 30%; animation-duration: 28s; animation-delay: -6s; opacity: .6; }
+  .aurora i:nth-child(3) { background: var(--c1); left: 30%; bottom: 0; animation-duration: 34s; animation-delay: -12s; opacity: .45; }
+  @keyframes drift { to { transform: translate(12vw, -10vh) scale(1.25) rotate(40deg); } }
+  .grain { position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: .09;
+           background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
 
-  header.hero { max-width: 900px; margin: 0 auto; padding: 56px 16px 32px; }
-  .hero h1 { font-size: clamp(40px, 8vw, 72px); font-weight: 800; }
-  .hero h1 .thirty { color: var(--accent-2); cursor: default; user-select: none; }
-  .hero p { color: var(--muted); font-size: 18px; margin: 0; }
-  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
-  .chip { background: var(--card); border: 1px solid var(--line); border-radius: 999px;
-          padding: 6px 14px; font-size: 14px; }
+  /* ---------- Panes ---------- */
+  .app { position: fixed; inset: 0; z-index: 2; }
+  .pane { position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden; visibility: hidden;
+          padding: 48px 16px calc(var(--nav-h) + 48px + env(safe-area-inset-bottom)); scrollbar-width: thin; }
+  .pane.active { visibility: visible; }
+  .wrap { max-width: 960px; margin: 0 auto; }
 
-  main { max-width: 900px; margin: 0 auto; padding: 0 16px 80px; }
-  section { padding-top: 40px; }
-  section > h2 { font-size: 30px; }
-  .lead { color: var(--muted); margin-top: -4px; }
-  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px; }
-  .grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
-  .todo { color: var(--accent-2); font-style: italic; }
+  .pane-head { margin-bottom: 28px; }
+  .pane-head .num { font-family: "Unbounded"; font-weight: 500; font-size: 13px; letter-spacing: .3em;
+                    color: var(--c1); text-transform: uppercase; }
+  .pane-head h2 { font-size: clamp(44px, 10vw, 104px); font-weight: 900; letter-spacing: -.02em; margin: 6px 0 10px;
+                  background: linear-gradient(100deg, #fff 30%, var(--c1), var(--c2), var(--c3));
+                  background-size: 200% 100%; -webkit-background-clip: text; background-clip: text; color: transparent;
+                  animation: sheen 6s linear infinite; }
+  @keyframes sheen { to { background-position: -200% 0; } }
+  .pane-head p { color: var(--muted); font-size: 18px; margin: 0; max-width: 560px; }
 
-  /* Agenda */
-  .day + .day { margin-top: 14px; }
-  .day h3 { font-size: 20px; }
-  .slots { list-style: none; margin: 0; padding: 0; }
-  .slots li { display: grid; grid-template-columns: 64px 1fr; gap: 12px; padding: 10px 0;
-              border-top: 1px solid var(--line); }
-  .slots time { font-weight: 600; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .card { background: var(--glass); border: 1px solid var(--line); border-radius: 20px; padding: 22px;
+          backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); position: relative; }
+  .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+  .todo { color: var(--c3); font-style: italic; }
 
-  /* Music */
-  .btn { display: inline-block; background: var(--accent); color: var(--bg); text-decoration: none;
-         font-weight: 600; padding: 10px 18px; border-radius: 10px; border: 0; cursor: pointer; font: inherit; }
-  .songs { counter-reset: s; list-style: none; padding: 0; margin: 16px 0 0; }
-  .songs li { counter-increment: s; display: flex; gap: 12px; align-items: baseline; padding: 8px 0;
-              border-top: 1px solid var(--line); }
-  .songs li::before { content: counter(s); color: var(--muted); width: 24px; flex: none; }
-  .songs .by { color: var(--muted); font-size: 14px; margin-left: auto; text-align: right; }
+  /* ---------- Home ---------- */
+  #home .wrap { min-height: 100%; display: flex; flex-direction: column; justify-content: center; }
+  .kicker { font-family: "Unbounded"; font-size: 13px; letter-spacing: .35em; text-transform: uppercase; color: var(--c1); }
+  .hero-title { font-size: clamp(56px, min(13vw, 16vh), 150px); font-weight: 900; letter-spacing: -.03em; margin: 8px 0 0; line-height: .9; }
+  .hero-30 { display: block; font-size: clamp(120px, min(42vw, 40vh), 440px); line-height: .8; margin: 0 0 16px -.04em;
+             color: transparent; -webkit-text-stroke: 2px var(--c2); cursor: default; user-select: none;
+             text-shadow: 0 0 40px rgba(255,43,214,.45); position: relative; width: fit-content;
+             animation: flicker 5s infinite; }
+  .hero-30::after { content: "30"; position: absolute; inset: 0; color: transparent; -webkit-text-stroke: 2px var(--c1);
+                    transform: translate(6px, 6px); opacity: .7; mix-blend-mode: screen; }
+  @keyframes flicker { 0%, 92%, 100% { opacity: 1; } 93% { opacity: .4; } 94% { opacity: 1; } 96% { opacity: .6; } }
+  .hero-sub { font-size: clamp(18px, 2.6vw, 24px); color: var(--muted); margin: 0 0 24px; }
+  .countdown { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 28px; }
+  .countdown div { background: var(--glass); border: 1px solid var(--line); border-radius: 14px; padding: 10px 14px;
+                   min-width: 76px; text-align: center; }
+  .countdown b { display: block; font-family: "Unbounded"; font-size: 28px; font-variant-numeric: tabular-nums; }
+  .countdown span { font-size: 11px; text-transform: uppercase; letter-spacing: .15em; color: var(--muted); }
+  .btn { display: inline-flex; align-items: center; gap: 10px; padding: 14px 22px; border-radius: 999px; border: 0;
+         font: 700 16px "Inter"; color: #07070d; text-decoration: none; cursor: pointer;
+         background: linear-gradient(90deg, var(--c1), var(--c2)); box-shadow: 0 0 30px rgba(51,225,255,.35);
+         transition: transform .2s, box-shadow .2s; }
+  .btn:hover { transform: translateY(-2px) scale(1.03); box-shadow: 0 0 50px rgba(255,43,214,.5); }
 
-  /* Committees */
-  .committee .type { display: inline-block; font-size: 12px; font-weight: 600; letter-spacing: .04em;
-                     text-transform: uppercase; color: var(--accent-2); margin-bottom: 6px; }
-  .committee ul { padding-left: 18px; margin: 10px 0 0; }
+  /* ---------- Agenda ---------- */
+  .day + .day { margin-top: 18px; }
+  .day h3 { font-size: 24px; display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; }
+  .day h3 small { font: 600 14px "Inter"; color: var(--muted); }
+  .slots { list-style: none; margin: 14px 0 0; padding: 0 0 0 22px; border-left: 2px solid var(--line); }
+  .slots li { position: relative; padding: 8px 0 14px; }
+  .slots li::before { content: ""; position: absolute; left: -29px; top: 14px; width: 12px; height: 12px; border-radius: 50%;
+                      background: var(--c1); box-shadow: 0 0 12px var(--c1); }
+  .day:nth-child(3n+2) .slots li::before { background: var(--c2); box-shadow: 0 0 12px var(--c2); }
+  .day:nth-child(3n+3) .slots li::before { background: var(--c3); box-shadow: 0 0 12px var(--c3); }
+  .slots time { font-family: "Unbounded"; font-size: 14px; color: var(--c1); display: block; }
 
-  /* Info */
-  dl { display: grid; grid-template-columns: max-content 1fr; gap: 10px 20px; margin: 0; }
-  dt { font-weight: 600; }
-  dd { margin: 0; }
-  @media (max-width: 520px) { dl { grid-template-columns: 1fr; gap: 2px; } dd { margin-bottom: 10px; } }
+  /* ---------- Music ---------- */
+  .music-card iframe { display: block; width: 100%; border: 0; border-radius: 14px; margin-top: 18px; }
+  .eq { display: inline-flex; gap: 3px; align-items: flex-end; height: 18px; }
+  .eq i { width: 4px; background: #07070d; border-radius: 2px; animation: eq 1s ease-in-out infinite; }
+  .eq i:nth-child(2) { animation-delay: -.3s; } .eq i:nth-child(3) { animation-delay: -.6s; }
+  @keyframes eq { 0%, 100% { height: 30%; } 50% { height: 100%; } }
 
-  footer { text-align: center; color: var(--muted); font-size: 13px; padding: 24px 16px 40px; }
+  /* ---------- Committees ---------- */
+  .committee { transition: transform .25s, border-color .25s, box-shadow .25s; overflow: hidden; }
+  .committee:hover { transform: translateY(-6px) rotate(-.6deg); border-color: var(--c1); box-shadow: 0 10px 50px rgba(51,225,255,.18); }
+  .committee .emoji { font-size: 40px; line-height: 1; display: block; margin-bottom: 10px; }
+  .committee .type { display: inline-block; font: 700 11px "Inter"; letter-spacing: .15em; text-transform: uppercase;
+                     color: var(--c2); margin-bottom: 6px; }
+  .committee h3 { font-size: 20px; }
+  .committee p { color: var(--muted); margin: 0; }
+  .committee ul { list-style: none; padding: 0; margin: 14px 0 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  .committee li { border: 1px solid var(--line); border-radius: 999px; padding: 3px 12px; font-size: 14px; }
+
+  /* ---------- Info / Luggage ---------- */
+  .info-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+  .info-grid .card h3 { font-size: 15px; letter-spacing: .08em; text-transform: uppercase; color: var(--c1);
+                        display: flex; gap: 10px; align-items: center; }
+  .info-grid .card p { margin: 0; }
+  .steps { counter-reset: st; display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+  .steps .card { counter-increment: st; padding-top: 58px; }
+  .steps .card::before { content: "0" counter(st); position: absolute; top: 16px; left: 22px;
+                         font: 900 28px "Unbounded"; color: transparent; -webkit-text-stroke: 1.5px var(--c2); }
+  .steps h3 { font-size: 18px; }
+  .steps p { margin: 0; color: var(--muted); }
+
+  /* ---------- Nav ---------- */
+  nav { position: fixed; z-index: 5; left: 50%; bottom: calc(14px + env(safe-area-inset-bottom)); transform: translateX(-50%);
+        max-width: calc(100vw - 24px); background: rgba(12,12,22,.72); border: 1px solid var(--line); border-radius: 22px;
+        backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); box-shadow: 0 10px 40px rgba(0,0,0,.5); }
+  nav ul { list-style: none; margin: 0; padding: 6px; display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; }
+  nav ul::-webkit-scrollbar { display: none; }
+  nav a { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 12px; border-radius: 16px;
+          color: var(--muted); text-decoration: none; font: 600 11px "Inter"; white-space: nowrap; transition: color .2s, background .2s; }
+  nav a span { font-size: 20px; line-height: 1; filter: grayscale(.6); transition: filter .2s, transform .2s; }
+  nav a:hover { color: var(--ink); }
+  nav a.on { color: var(--ink); background: linear-gradient(135deg, rgba(51,225,255,.22), rgba(255,43,214,.22)); }
+  nav a.on span { filter: none; transform: scale(1.15); }
+
+  /* ---------- Transition overlay: wipe bars + laser swords ---------- */
+  .fx { position: fixed; inset: 0; z-index: 10; pointer-events: none; overflow: hidden; }
+  .fx.busy { pointer-events: all; }
+  .bars { position: absolute; inset: -10% -30%; display: flex; transform: skewX(-14deg); }
+  .bars i { flex: 1; transform: translateY(110%); }
+  .bars i:nth-child(1) { background: var(--c4); } .bars i:nth-child(2) { background: var(--c2); }
+  .bars i:nth-child(3) { background: #0d0d18; } .bars i:nth-child(4) { background: var(--c1); }
+  .bars i:nth-child(5) { background: var(--c3); } .bars i:nth-child(6) { background: #0d0d18; }
+  .fx-label { position: absolute; inset: 0; display: grid; place-items: center; opacity: 0;
+              font: 900 clamp(48px, 14vw, 200px) "Unbounded"; color: transparent; -webkit-text-stroke: 2px #fff;
+              letter-spacing: -.02em; text-shadow: 0 0 40px rgba(255,255,255,.5); white-space: nowrap; }
+
+  .saber { position: absolute; left: 50%; top: 50%; display: flex; align-items: center; opacity: 0;
+           width: min(96vmax, 1100px); --glow: var(--c1); }
+  .saber.red { --glow: #ff2b4e; }
+  .saber .hilt { flex: none; width: 14%; height: clamp(12px, 2.4vmin, 22px); border-radius: 4px;
+                 background: linear-gradient(180deg, #e8e8ef, #6b6b78 45%, #2b2b33 55%, #a9a9b6);
+                 box-shadow: inset -6px 0 0 #222, inset -12px 0 0 #bbb, inset -18px 0 0 #222; }
+  .saber .blade { flex: 1; height: clamp(7px, 1.4vmin, 13px); border-radius: 0 999px 999px 0; background: #fff;
+                  transform-origin: left center; transform: scaleX(0);
+                  box-shadow: 0 0 4px #fff, 0 0 12px var(--glow), 0 0 28px var(--glow), 0 0 60px var(--glow), 0 0 110px var(--glow);
+                  animation: hum .07s linear infinite alternate; }
+  @keyframes hum { to { filter: brightness(1.25); } }
+  .clash { position: absolute; left: 50%; top: 50%; width: 40vmin; height: 40vmin; margin: -20vmin 0 0 -20vmin; border-radius: 50%;
+           background: radial-gradient(circle, #fff 0 8%, rgba(255,240,200,.9) 14%, rgba(255,120,220,.5) 30%, transparent 62%);
+           opacity: 0; transform: scale(0); mix-blend-mode: screen; }
+  .sparks { position: absolute; left: 50%; top: 50%; }
+  .sparks i { position: absolute; width: 3px; height: 18px; border-radius: 2px; background: #fff;
+              box-shadow: 0 0 8px var(--c3), 0 0 16px var(--c2); opacity: 0; }
+
+  footer { text-align: center; color: var(--muted); font-size: 13px; padding-top: 40px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aurora i, .pane-head h2, .hero-30, .blade, .eq i { animation: none !important; }
+  }
 </style>
 </head>
 <body>
 
-<nav>
-  <ul>
-    <li><a href="#agenda">Agenda</a></li>
-    <li><a href="#music">Music</a></li>
-    <li><a href="#committees">Committees</a></li>
-    <li><a href="#info">Practical info</a></li>
-    <li><a href="#luggage">Luggage</a></li>
-  </ul>
-</nav>
+<canvas id="stars" aria-hidden="true"></canvas>
+<div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
+<div class="grain" aria-hidden="true"></div>
 
-<header class="hero">
-  <h1>Herman <span class="thirty" id="egg">30</span></h1>
-  <p>A cabin weekend at Studenterhytta, Nordmarka – Oslo.</p>
-  <div class="chips">
-    <span class="chip">📅 <span class="todo">[dates]</span></span>
-    <span class="chip">📍 Studenterhytta</span>
-    <span class="chip">💸 <span class="todo">[price]</span> per person</span>
-  </div>
-</header>
+<div class="app" id="app">
 
-<main>
-
-  <!-- AGENDA: copy a .day block per day, and an <li> per slot -->
-  <section id="agenda">
-    <h2>Agenda</h2>
-    <p class="lead">Rough plan. Times are cabin times, i.e. approximate.</p>
-
-    <div class="card day">
-      <h3>Friday <span class="todo">[date]</span></h3>
-      <ul class="slots">
-        <li><time>16:00</time><div>Meet at <span class="todo">[meeting point]</span>, hike in</div></li>
-        <li><time>18:00</time><div>Arrive, check in, light the fire</div></li>
-        <li><time>20:00</time><div>Dinner – <span class="todo">[committee]</span></div></li>
-        <li><time>22:00</time><div><span class="todo">[activity]</span></div></li>
-      </ul>
-    </div>
-
-    <div class="card day">
-      <h3>Saturday <span class="todo">[date]</span></h3>
-      <ul class="slots">
-        <li><time>10:00</time><div>Breakfast</div></li>
-        <li><time>12:00</time><div><span class="todo">[daytime activity]</span></div></li>
-        <li><time>19:00</time><div>Birthday dinner &amp; speeches</div></li>
-        <li><time>22:00</time><div>Party</div></li>
-      </ul>
-    </div>
-
-    <div class="card day">
-      <h3>Sunday <span class="todo">[date]</span></h3>
-      <ul class="slots">
-        <li><time>10:00</time><div>Breakfast &amp; cleaning</div></li>
-        <li><time>13:00</time><div>Check out, hike down</div></li>
-      </ul>
+  <!-- HOME -->
+  <section id="home" class="pane" data-label="HERMAN 30">
+    <div class="wrap">
+      <div class="r kicker">Studenterhytta · Nordmarka · Oslo</div>
+      <h1 class="r hero-title">Herman</h1>
+      <span class="r hero-30" id="egg">30</span>
+      <p class="r hero-sub">Three decades. One cabin. Zero ragrets.</p>
+      <div class="r countdown" id="countdown"></div>
+      <div class="r"><a class="btn" href="#agenda">See the plan →</a></div>
     </div>
   </section>
 
-  <!-- MUSIC: add the collaborative playlist link; the list below is for highlights/requests -->
-  <section id="music">
-    <h2>Music</h2>
-    <p class="lead">Add your songs to the shared playlist – everyone can edit it.</p>
-    <div class="card">
-      <a class="btn" href="https://open.spotify.com/playlist/1KjXqBlUZ7ygePQzqCVNVn?si=5df037698fed4dd4&amp;pt=51a08893a253d85736e973c6d2f7d90c" id="playlist-link" target="_blank" rel="noopener">Open in Spotify &amp; add songs →</a>
-      <iframe style="display:block;width:100%;border:0;border-radius:12px;margin-top:16px" src="https://open.spotify.com/embed/playlist/1KjXqBlUZ7ygePQzqCVNVn" height="380" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" title="Herman 30 playlist"></iframe>
-      <ol class="songs">
-        <li><span>Song title – Artist</span><span class="by">added by Name</span></li>
-        <li><span>Song title – Artist</span><span class="by">added by Name</span></li>
-        <li><span>Song title – Artist</span><span class="by">added by Name</span></li>
-      </ol>
+  <!-- AGENDA: copy a .day block per day, and an <li> per slot -->
+  <section id="agenda" class="pane" data-label="AGENDA">
+    <div class="wrap">
+      <header class="pane-head r">
+        <div class="num">01 / The plan</div>
+        <h2>Agenda</h2>
+        <p>Rough plan. Times are cabin times, i.e. approximate.</p>
+      </header>
+
+      <div class="card day r">
+        <h3>Friday <small class="todo">[date]</small></h3>
+        <ul class="slots">
+          <li><time>16:00</time>Meet at <span class="todo">[meeting point]</span>, hike in</li>
+          <li><time>18:00</time>Arrive, check in, light the fire</li>
+          <li><time>20:00</time>Dinner – <span class="todo">[committee]</span></li>
+          <li><time>22:00</time><span class="todo">[activity]</span></li>
+        </ul>
+      </div>
+
+      <div class="card day r">
+        <h3>Saturday <small class="todo">[date]</small></h3>
+        <ul class="slots">
+          <li><time>10:00</time>Breakfast</li>
+          <li><time>12:00</time><span class="todo">[daytime activity]</span></li>
+          <li><time>19:00</time>Birthday dinner &amp; speeches</li>
+          <li><time>22:00</time>Party</li>
+        </ul>
+      </div>
+
+      <div class="card day r">
+        <h3>Sunday <small class="todo">[date]</small></h3>
+        <ul class="slots">
+          <li><time>10:00</time>Breakfast &amp; cleaning</li>
+          <li><time>13:00</time>Check out, hike down</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- MUSIC -->
+  <section id="music" class="pane" data-label="MUSIC">
+    <div class="wrap">
+      <header class="pane-head r">
+        <div class="num">02 / The soundtrack</div>
+        <h2>Music</h2>
+        <p>One shared playlist. Everyone can add. Bangers only.</p>
+      </header>
+      <div class="card music-card r">
+        <a class="btn" href="https://open.spotify.com/playlist/1KjXqBlUZ7ygePQzqCVNVn?si=5df037698fed4dd4&amp;pt=51a08893a253d85736e973c6d2f7d90c" id="playlist-link" target="_blank" rel="noopener"><span class="eq"><i></i><i></i><i></i></span> Open in Spotify &amp; add songs →</a>
+        <iframe src="https://open.spotify.com/embed/playlist/1KjXqBlUZ7ygePQzqCVNVn?theme=0" height="420" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" title="Herman 30 playlist"></iframe>
+      </div>
     </div>
   </section>
 
   <!-- COMMITTEES: one .committee card per committee -->
-  <section id="committees">
-    <h2>Committees</h2>
-    <p class="lead">Who does what. Everyone is on at least one.</p>
-    <div class="grid">
-      <div class="card committee">
-        <span class="type">Food</span>
-        <h3>Kitchen committee</h3>
-        <p>Plans the menu, shops and runs the kitchen.</p>
-        <ul><li>Name</li><li>Name</li><li>Name</li></ul>
-      </div>
-      <div class="card committee">
-        <span class="type">Drinks</span>
-        <h3>Bar committee</h3>
-        <p>Keeps the bar stocked and the glasses full.</p>
-        <ul><li>Name</li><li>Name</li></ul>
-      </div>
-      <div class="card committee">
-        <span class="type">Entertainment</span>
-        <h3>Party committee</h3>
-        <p>Games, speeches, the program for Saturday night.</p>
-        <ul><li>Name</li><li>Name</li></ul>
-      </div>
-      <div class="card committee">
-        <span class="type">Logistics</span>
-        <h3>Transport committee</h3>
-        <p>Luggage transport and getting everyone up and down.</p>
-        <ul><li>Name</li><li>Name</li></ul>
-      </div>
-      <div class="card committee">
-        <span class="type">Cleanup</span>
-        <h3>Cleaning committee</h3>
-        <p>Makes sure we get the cabin deposit back.</p>
-        <ul><li>Name</li><li>Name</li></ul>
+  <section id="committees" class="pane" data-label="COMMITTEES">
+    <div class="wrap">
+      <header class="pane-head r">
+        <div class="num">03 / The crew</div>
+        <h2>Committees</h2>
+        <p>Who does what. Everyone is on at least one.</p>
+      </header>
+      <div class="grid">
+        <div class="card committee r">
+          <span class="emoji">🍳</span><span class="type">Food</span>
+          <h3>Kitchen committee</h3>
+          <p>Plans the menu, shops and runs the kitchen.</p>
+          <ul><li>Name</li><li>Name</li><li>Name</li></ul>
+        </div>
+        <div class="card committee r">
+          <span class="emoji">🍻</span><span class="type">Drinks</span>
+          <h3>Bar committee</h3>
+          <p>Keeps the bar stocked and the glasses full.</p>
+          <ul><li>Name</li><li>Name</li></ul>
+        </div>
+        <div class="card committee r">
+          <span class="emoji">🎉</span><span class="type">Entertainment</span>
+          <h3>Party committee</h3>
+          <p>Games, speeches, the program for Saturday night.</p>
+          <ul><li>Name</li><li>Name</li></ul>
+        </div>
+        <div class="card committee r">
+          <span class="emoji">🚚</span><span class="type">Logistics</span>
+          <h3>Transport committee</h3>
+          <p>Luggage transport and getting everyone up and down.</p>
+          <ul><li>Name</li><li>Name</li></ul>
+        </div>
+        <div class="card committee r">
+          <span class="emoji">🧽</span><span class="type">Cleanup</span>
+          <h3>Cleaning committee</h3>
+          <p>Makes sure we get the cabin deposit back.</p>
+          <ul><li>Name</li><li>Name</li></ul>
+        </div>
       </div>
     </div>
   </section>
 
-  <section id="info">
-    <h2>Practical info</h2>
-    <p class="lead">We rent the cabin together and split the cost.</p>
-    <div class="card">
-      <dl>
-        <dt>Place</dt>
-        <dd>Studenterhytta, Nordmarka, Oslo <span class="todo">[address / map link]</span></dd>
-        <dt>When</dt>
-        <dd><span class="todo">[Friday date + time] → [Sunday date + time]</span></dd>
-        <dt>Meeting point</dt>
-        <dd><span class="todo">[e.g. Frognerseteren T-bane station, time]</span> – then we hike in together</dd>
-        <dt>Price</dt>
-        <dd><span class="todo">[amount]</span> per person – covers the cabin <span class="todo">[and food?]</span></dd>
-        <dt>Payment</dt>
-        <dd>Vipps <span class="todo">[amount]</span> to <span class="todo">[name / number]</span> by <span class="todo">[deadline]</span>. Mark it “Herman 30”.</dd>
-        <dt>Bring</dt>
-        <dd>Sleeping bag or sheets, indoor shoes, warm clothes, headlamp, <span class="todo">[…]</span></dd>
-        <dt>Contact</dt>
-        <dd><span class="todo">[name + phone]</span></dd>
-      </dl>
+  <!-- PRACTICAL INFO -->
+  <section id="info" class="pane" data-label="INFO">
+    <div class="wrap">
+      <header class="pane-head r">
+        <div class="num">04 / The boring stuff</div>
+        <h2>Practical</h2>
+        <p>We rent the cabin together and split the cost.</p>
+      </header>
+      <div class="info-grid">
+        <div class="card r"><h3>📍 Place</h3><p>Studenterhytta, Nordmarka, Oslo <span class="todo">[address / map link]</span></p></div>
+        <div class="card r"><h3>📅 When</h3><p><span class="todo">[Friday date + time] → [Sunday date + time]</span></p></div>
+        <div class="card r"><h3>🚇 Meeting point</h3><p><span class="todo">[e.g. Frognerseteren T-bane station, time]</span> – then we hike in together.</p></div>
+        <div class="card r"><h3>💸 Price</h3><p><span class="todo">[amount]</span> per person – covers the cabin <span class="todo">[and food?]</span></p></div>
+        <div class="card r"><h3>📱 Payment</h3><p>Vipps <span class="todo">[amount]</span> to <span class="todo">[name / number]</span> by <span class="todo">[deadline]</span>. Mark it “Herman 30”.</p></div>
+        <div class="card r"><h3>🎒 Bring</h3><p>Sleeping bag or sheets, indoor shoes, warm clothes, headlamp, <span class="todo">[…]</span></p></div>
+        <div class="card r"><h3>☎️ Contact</h3><p><span class="todo">[name + phone]</span></p></div>
+      </div>
     </div>
   </section>
 
-  <section id="luggage">
-    <h2>Luggage transport</h2>
-    <p class="lead">There is no road to the door – walk light, send the heavy stuff.</p>
-    <div class="card">
-      <dl>
-        <dt>Drop-off</dt>
-        <dd><span class="todo">[where]</span>, <span class="todo">[day + time]</span></dd>
-        <dt>Transported by</dt>
-        <dd><span class="todo">[car / name]</span></dd>
-        <dt>What to send</dt>
-        <dd>Sleeping bag, drinks, heavy bags. Label everything with your name.</dd>
-        <dt>Carry yourself</dt>
-        <dd>What you need for the hike in, plus valuables.</dd>
-        <dt>Return</dt>
-        <dd><span class="todo">[pick-up time and place on Sunday]</span></dd>
-      </dl>
+  <!-- LUGGAGE -->
+  <section id="luggage" class="pane" data-label="LUGGAGE">
+    <div class="wrap">
+      <header class="pane-head r">
+        <div class="num">05 / Heavy lifting</div>
+        <h2>Luggage</h2>
+        <p>No road to the door – walk light, send the heavy stuff.</p>
+      </header>
+      <div class="steps">
+        <div class="card r"><h3>Drop off</h3><p><span class="todo">[where]</span>, <span class="todo">[day + time]</span></p></div>
+        <div class="card r"><h3>We drive it up</h3><p>Transported by <span class="todo">[car / name]</span></p></div>
+        <div class="card r"><h3>What to send</h3><p>Sleeping bag, drinks, heavy bags. Label everything with your name.</p></div>
+        <div class="card r"><h3>Carry yourself</h3><p>What you need for the hike in, plus valuables.</p></div>
+        <div class="card r"><h3>Going home</h3><p><span class="todo">[pick-up time and place on Sunday]</span></p></div>
+      </div>
+      <footer class="r">Made with love for Herman. Nobody tap the 30.</footer>
     </div>
   </section>
 
-</main>
+</div>
 
-<footer>Made with love for Herman. Nobody tap the 30.</footer>
+<nav aria-label="Sections">
+  <ul>
+    <li><a href="#home"><span>🏠</span>Home</a></li>
+    <li><a href="#agenda"><span>🗓️</span>Agenda</a></li>
+    <li><a href="#music"><span>🎵</span>Music</a></li>
+    <li><a href="#committees"><span>👥</span>Crew</a></li>
+    <li><a href="#info"><span>ℹ️</span>Info</a></li>
+    <li><a href="#luggage"><span>🧳</span>Luggage</a></li>
+  </ul>
+</nav>
+
+<div class="fx" id="fx" aria-hidden="true">
+  <div class="bars"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="fx-label" id="fx-label"></div>
+  <div class="saber" id="saber1"><i class="hilt"></i><i class="blade"></i></div>
+  <div class="saber red" id="saber2"><i class="hilt"></i><i class="blade"></i></div>
+  <div class="clash" id="clash"></div>
+  <div class="sparks" id="sparks"></div>
+</div>
 
 <script>
-  // Easter egg: tap the "30" five times quickly to open the old Hard Rizz page.
-  (() => {
-    const egg = document.getElementById("egg");
-    let taps = 0, timer;
-    egg.addEventListener("click", () => {
-      taps++;
-      clearTimeout(timer);
-      timer = setTimeout(() => (taps = 0), 1500);
-      if (taps >= 5) location.href = "rizz.html";
-    });
-  })();
+(() => {
+  // ---- Set the trip start here (local time), e.g. "2027-03-12T16:00". Empty = "date TBA".
+  const TRIP_START = "";
+
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const panes = [...document.querySelectorAll(".pane")];
+  const ids = panes.map(p => p.id);
+  const links = [...document.querySelectorAll("nav a")];
+  const fx = document.getElementById("fx");
+  const bars = [...fx.querySelectorAll(".bars i")];
+  const label = document.getElementById("fx-label");
+  const s1 = document.getElementById("saber1"), s2 = document.getElementById("saber2");
+  const clash = document.getElementById("clash"), sparks = document.getElementById("sparks");
+  const app = document.getElementById("app");
+  let cur = -1, busy = false;
+
+  // ---------- Pane switching ----------
+  function show(i) {
+    panes.forEach((p, j) => p.classList.toggle("active", j === i));
+    links.forEach(a => a.classList.toggle("on", a.getAttribute("href") === "#" + ids[i]));
+    panes[i].scrollTop = 0;
+    cur = i;
+    reveal(panes[i]);
+  }
+
+  function reveal(pane) {
+    if (reduce) return;
+    pane.querySelectorAll(".r").forEach((el, k) => el.animate(
+      [{ opacity: 0, transform: "translateY(40px) scale(.97)", filter: "blur(10px)" },
+       { opacity: 1, transform: "none", filter: "blur(0)" }],
+      { duration: 650, delay: Math.min(k, 10) * 70, easing: "cubic-bezier(.2,.8,.2,1)", fill: "backwards" }));
+  }
+
+  const anim = (el, kf, opts) => el.animate(kf, { fill: "forwards", ...opts }).finished;
+  const T = (x, y, r) => `translate(-50%,-50%) translate(${x},${y}) rotate(${r}deg)`;
+
+  function burstSparks() {
+    sparks.innerHTML = "";
+    for (let k = 0; k < 22; k++) {
+      const s = document.createElement("i");
+      sparks.appendChild(s);
+      const a = Math.random() * Math.PI * 2, d = 80 + Math.random() * 260;
+      s.animate([
+        { opacity: 1, transform: `rotate(${a + Math.PI / 2}rad) translateY(0) scaleY(1.4)` },
+        { opacity: 0, transform: `rotate(${a + Math.PI / 2}rad) translateY(${-d}px) scaleY(.3)` }],
+        { duration: 450 + Math.random() * 300, easing: "cubic-bezier(.1,.7,.3,1)" });
+    }
+  }
+
+  async function swords(dir) {
+    const blades = [s1, s2].map(s => s.querySelector(".blade"));
+    [s1, s2].forEach(s => (s.style.opacity = 1));
+    // Ignite while flying in from opposite corners
+    blades.forEach(b => anim(b, [{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }], { duration: 220, easing: "ease-out" }));
+    const ease = "cubic-bezier(.6,0,.2,1)";
+    await Promise.all([
+      anim(s1, [{ transform: T(`${-70 * dir}vw`, "70vh", -95) }, { transform: T("0px", "0px", -35) }], { duration: 420, easing: ease }),
+      anim(s2, [{ transform: T(`${70 * dir}vw`, "70vh", 275) }, { transform: T("0px", "0px", 215) }], { duration: 420, easing: ease }),
+    ]);
+    // CLASH
+    anim(clash, [{ opacity: 1, transform: "scale(.2)" }, { opacity: 1, transform: "scale(1.6)", offset: .35 }, { opacity: 0, transform: "scale(2.4)" }],
+         { duration: 520, easing: "ease-out" });
+    burstSparks();
+    app.animate([{ transform: "translate(0,0)" }, { transform: "translate(-10px,6px)" }, { transform: "translate(8px,-8px)" },
+                 { transform: "translate(-6px,-4px)" }, { transform: "translate(0,0)" }], { duration: 300 });
+  }
+
+  async function swordsOut(dir) {
+    const ease = "cubic-bezier(.5,0,.75,0)";
+    const blades = [s1, s2].map(s => s.querySelector(".blade"));
+    await Promise.all([
+      anim(s1, [{ transform: T("0px", "0px", -35) }, { transform: T("-12px", "8px", -42), offset: .25 }, { transform: T(`${80 * dir}vw`, "-80vh", 20) }], { duration: 520, easing: ease }),
+      anim(s2, [{ transform: T("0px", "0px", 215) }, { transform: T("12px", "8px", 222), offset: .25 }, { transform: T(`${-80 * dir}vw`, "-80vh", 160) }], { duration: 520, easing: ease }),
+      ...blades.map(b => anim(b, [{ transform: "scaleX(1)" }, { transform: "scaleX(1)", offset: .7 }, { transform: "scaleX(0)" }], { duration: 520 })),
+    ]);
+    [s1, s2].forEach(s => (s.style.opacity = 0));
+  }
+
+  async function go(i) {
+    if (i < 0 || i === cur || busy) return;
+    if (reduce || cur < 0) return show(i);
+    busy = true; fx.classList.add("busy");
+    const dir = i > cur ? 1 : -1;
+    label.textContent = panes[i].dataset.label;
+    const order = dir > 0 ? bars : [...bars].reverse();
+
+    const clashP = swords(dir);
+    await new Promise(r => setTimeout(r, 260));
+    await Promise.all([
+      ...order.map((b, k) => anim(b, [{ transform: "translateY(110%)" }, { transform: "translateY(0)" }],
+                                 { duration: 380, delay: k * 45, easing: "cubic-bezier(.7,0,.3,1)" })),
+      anim(label, [{ opacity: 0, transform: "scale(1.6)", letterSpacing: ".3em" }, { opacity: 1, transform: "scale(1)", letterSpacing: "-.02em" }],
+           { duration: 420, delay: 200, easing: "cubic-bezier(.2,.8,.2,1)" }),
+      clashP,
+    ]);
+    show(i);
+    await new Promise(r => setTimeout(r, 120));
+    await Promise.all([
+      swordsOut(dir),
+      anim(label, [{ opacity: 1, transform: "scale(1)" }, { opacity: 0, transform: "scale(.7)" }], { duration: 260, easing: "ease-in" }),
+      ...order.map((b, k) => anim(b, [{ transform: "translateY(0)" }, { transform: "translateY(-110%)" }],
+                                 { duration: 420, delay: 80 + k * 45, easing: "cubic-bezier(.7,0,.3,1)" })),
+    ]);
+    bars.forEach(b => b.getAnimations().forEach(a => a.cancel()));
+    busy = false; fx.classList.remove("busy");
+    if (location.hash.slice(1) !== ids[cur]) go(ids.indexOf(location.hash.slice(1)));
+  }
+
+  const fromHash = () => Math.max(0, ids.indexOf(location.hash.slice(1)));
+  addEventListener("hashchange", () => go(fromHash()));
+  const nav = i => { if (!busy && i >= 0 && i < ids.length) location.hash = ids[i]; };
+  addEventListener("keydown", e => {
+    if (e.key === "ArrowRight") nav(cur + 1);
+    if (e.key === "ArrowLeft") nav(cur - 1);
+  });
+  let tx = 0, ty = 0;
+  app.addEventListener("touchstart", e => { tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, { passive: true });
+  app.addEventListener("touchend", e => {
+    const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+    if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.5 && !e.target.closest("iframe")) nav(cur + (dx < 0 ? 1 : -1));
+  }, { passive: true });
+  show(fromHash());
+
+  // ---------- Countdown ----------
+  const cd = document.getElementById("countdown");
+  function tick() {
+    const t = TRIP_START && new Date(TRIP_START) - Date.now();
+    if (!TRIP_START || isNaN(t)) { cd.innerHTML = '<div><b>TBA</b><span>date</span></div>'; return; }
+    if (t <= 0) { cd.innerHTML = '<div><b>NOW</b><span>it’s on</span></div>'; return; }
+    const parts = [[86400000, "days"], [3600000, "hours"], [60000, "min"], [1000, "sec"]];
+    let rest = t;
+    cd.innerHTML = parts.map(([ms, n]) => { const v = Math.floor(rest / ms); rest %= ms;
+      return `<div><b>${String(v).padStart(2, "0")}</b><span>${n}</span></div>`; }).join("");
+  }
+  tick(); if (TRIP_START) setInterval(tick, 1000);
+
+  // ---------- Starfield ----------
+  const c = document.getElementById("stars"), g = c.getContext("2d");
+  let W, H, stars = [], mx = 0, my = 0;
+  function size() {
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    W = c.width = innerWidth * dpr; H = c.height = innerHeight * dpr;
+    stars = Array.from({ length: Math.round((innerWidth * innerHeight) / 6000) }, () => ({
+      x: Math.random() * W, y: Math.random() * H, z: Math.random() * .9 + .1, p: Math.random() * 6.28 }));
+  }
+  function draw(t) {
+    g.clearRect(0, 0, W, H);
+    for (const s of stars) {
+      const a = .35 + .65 * Math.abs(Math.sin(s.p + t / 900 * s.z));
+      const x = ((s.x + mx * s.z * 30) % W + W) % W, y = ((s.y + my * s.z * 30 - t * .01 * s.z) % H + H) % H;
+      g.fillStyle = `rgba(255,255,255,${a * s.z})`;
+      g.fillRect(x, y, s.z * 2.2, s.z * 2.2);
+    }
+    if (!reduce) requestAnimationFrame(draw);
+  }
+  addEventListener("resize", size);
+  addEventListener("pointermove", e => { mx = e.clientX / innerWidth - .5; my = e.clientY / innerHeight - .5; });
+  size(); requestAnimationFrame(draw);
+
+  // ---------- Easter egg: tap the "30" five times quickly ----------
+  const egg = document.getElementById("egg");
+  let taps = 0, timer;
+  egg.addEventListener("click", () => {
+    taps++; clearTimeout(timer); timer = setTimeout(() => (taps = 0), 1500);
+    egg.animate([{ transform: "scale(1)" }, { transform: `scale(${1 + taps * .06}) rotate(${taps % 2 ? -3 : 3}deg)` }, { transform: "scale(1)" }], { duration: 200 });
+    if (taps >= 5) location.href = "rizz.html";
+  });
+})();
 </script>
 </body>
 </html>
