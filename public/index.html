@@ -129,14 +129,71 @@
   .committee ul { list-style: none; padding: 0; margin: 14px 0 0; display: flex; flex-wrap: wrap; gap: 6px; }
   .committee li { border: 1px solid var(--line); border-radius: 999px; padding: 3px 12px; font-size: 14px; }
 
-  .committee[data-committee="development"] { background: linear-gradient(145deg, #201344, #100d20); border-color: #8157ff; }
-  .dev-art { display: grid; place-items: center; height: 122px; margin: -22px -22px 18px;
-    background: radial-gradient(ellipse at center, #6323a9 0%, transparent 67%),
-                repeating-linear-gradient(0deg, #ac6fff36 0 1px, transparent 1px 13px),
-                repeating-linear-gradient(90deg, #46dff43b 0 1px, transparent 1px 20px), #0c1029; }
-  .dev-art span { display: grid; place-items: center; width: 102px; height: 65px; border: 2px solid #55f4ff;
-    border-radius: 12px; background: #101435; color: #d4ffff; font: 700 32px/1 monospace;
-    box-shadow: 0 0 24px #22e2fca6, inset 0 0 18px #5429cc; transform: rotate(-8deg); }
+  .committee[data-committee="development"] {
+    grid-column: 1 / -1; min-width: 0; padding: 0; border-color: #7e51ff;
+    background: #110b24; box-shadow: 0 0 36px #7527ff38;
+  }
+  .committee[data-committee="development"]:hover { transform: none; border-color: #bf8aff; }
+  .dev-art {
+    --aim-x: 0px; --aim-y: 0px; --tilt-x: 0deg; --tilt-y: 0deg;
+    position: relative; isolation: isolate; display: grid; place-items: center; overflow: hidden;
+    height: clamp(214px, 36vw, 320px); border-bottom: 1px solid #ad79ff66;
+    background: radial-gradient(ellipse at center, #401779 0%, #171437 47%, #080818 83%);
+  }
+  .dev-art::before {
+    content: ""; position: absolute; inset: 41% -45% -85%; pointer-events: none;
+    background: repeating-linear-gradient(90deg, #9d64ff64 0 1px, transparent 1px 39px),
+                repeating-linear-gradient(0deg, #9d64ff64 0 1px, transparent 1px 30px);
+    transform: perspective(160px) rotateX(45deg) translate3d(var(--aim-x), 0, 0);
+    transform-origin: center 15%; mask-image: linear-gradient(transparent, #000 28%, #000);
+  }
+  .dev-art::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: repeating-linear-gradient(0deg, #a6a0ff12 0 1px, transparent 1px 5px);
+  }
+  .dev-orbit {
+    --orbit-size: min(53vw, 370px);
+    position: absolute; width: var(--orbit-size); aspect-ratio: 1; border-radius: 50%; opacity: .88;
+    background: repeating-conic-gradient(from 11deg, #df64ff 0 2deg, transparent 2deg 12deg);
+    mask-image: radial-gradient(transparent 56%, #000 57% 60%, transparent 61%);
+    transform: translate(var(--aim-x), var(--aim-y)) rotate(-18deg) scaleY(.66);
+  }
+  .dev-orbit + .dev-orbit {
+    --orbit-size: min(68vw, 520px);
+    background: repeating-conic-gradient(#37e9ff 0 4deg, transparent 4deg 27deg);
+    transform: translate(var(--aim-x), var(--aim-y)) rotate(13deg) scaleY(.39);
+  }
+  .dev-core {
+    position: relative; display: grid; place-items: center; width: clamp(112px, 25vw, 184px); aspect-ratio: 1.38;
+    border: 3px solid #93fcff; border-radius: 16px;
+    background: repeating-linear-gradient(135deg, transparent 0 10px, #ad55ff29 10px 11px), #101333;
+    color: #eaffff; font: 900 clamp(36px, 8vw, 72px)/1 monospace; text-shadow: 0 0 16px #45e9ff;
+    box-shadow: 0 0 35px #2be8ff90, inset 0 0 30px #9e48ff80, 8px 10px 0 #4e207c;
+    transform: perspective(500px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y)) rotate(-9deg);
+    transition: transform .18s ease-out;
+  }
+  .dev-core::before, .dev-core::after {
+    content: ""; position: absolute; inset: -13px 10%; z-index: -1;
+    background: repeating-linear-gradient(90deg, #ffe16c 0 5px, transparent 5px 14px);
+    clip-path: polygon(0 0,100% 0,100% 100%,0 100%,0 90%,100% 90%,100% 10%,0 10%);
+  }
+  .dev-core::after { inset: 13% -13px; transform: rotate(90deg); }
+  .dev-bursts { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  .dev-art[data-interactive] { cursor: crosshair; }
+  .dev-content { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px; padding: 22px; }
+  .dev-content h3 { color: #f4e4ff; }
+  .dev-trigger {
+    border: 1px solid #ffc65d; border-radius: 10px; padding: 10px 16px;
+    background: linear-gradient(130deg, #fff2a7, #ff9a47); color: #230c28;
+    font: 800 14px/1.3 "Unbounded", sans-serif; cursor: pointer; box-shadow: 0 0 20px #ff9a4755;
+  }
+  .dev-trigger[hidden] { display: none; }
+  .dev-trigger:hover { background: #fff2a7; }
+  .dev-trigger:focus-visible { outline: 3px solid #8dfcff; outline-offset: 4px; }
+  .dev-art.ignited .dev-core { border-color: #ffe287; box-shadow: 0 0 40px #ff9a47a0, inset 0 0 30px #ff5daf80, 8px 10px 0 #782557; }
+  @media (prefers-reduced-motion: reduce) {
+    .dev-core { transition: none; }
+  }
 
   /* ---------- Info / Luggage ---------- */
   .info-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); }
@@ -338,10 +395,18 @@
         </article>
         <article class="card committee r" data-committee="development">
           <div class="dev-art" aria-hidden="true">
-            <span>&lt;/&gt;</span>
+            <span class="dev-orbit"></span>
+            <span class="dev-orbit"></span>
+            <span class="dev-core">&lt;/&gt;</span>
+            <canvas class="dev-bursts"></canvas>
           </div>
-          <h3>Sick Development committee</h3>
-          <p>Builds the site and the weekend’s digital surprises.</p>
+          <div class="dev-content">
+            <div>
+              <h3>Sick Development committee</h3>
+              <p>Builds the site and the weekend’s digital surprises.</p>
+            </div>
+            <button class="dev-trigger" type="button" hidden>⚡ Overclock</button>
+          </div>
         </article>
         <article class="card committee r" data-committee="dinner">
           <span class="emoji" aria-hidden="true">🍳</span>
@@ -863,5 +928,6 @@
   armIdle();
 })();
 </script>
+<script src="dev-sticker.js" defer></script>
 </body>
 </html>
