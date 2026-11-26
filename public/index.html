@@ -264,20 +264,27 @@
   // NO RAGRETS guy sneaks in from a random edge at random (but frequent) intervals.
   // Each edge rotates the card so his head faces into the screen, never off it.
   function sneak() {
+    const W = innerWidth, H = innerHeight;
+    const w = Math.round(Math.min(Math.min(W, H) * rand(.4, .55), 340));
+    // gap = how far the whole card stops clear of that edge.
+    // Bottom gets extra room for the marquee and the phone browser's toolbar.
+    const BOTTOM_GAP = 130, EDGE_GAP = 18;
+    const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+    const alongX = () => clamp(rand(.15, .85) * W, w / 2 + 12, W - w / 2 - 12);
+    const alongY = () => clamp(rand(.2, .8) * H, w / 2 + 12, Math.max(w / 2 + 12, H - BOTTOM_GAP - w / 2));
     const sides = [
-      { rot: 0,   x: () => rand(.15, .85) * innerWidth, y: () => innerHeight }, // bottom
-      { rot: 180, x: () => rand(.15, .85) * innerWidth, y: () => 0 },           // top
-      { rot: 90,  x: () => 0, y: () => rand(.2, .8) * innerHeight },            // left
-      { rot: -90, x: () => innerWidth, y: () => rand(.2, .8) * innerHeight },   // right
+      { rot: 0,   x: alongX, y: () => H, gap: BOTTOM_GAP }, // bottom
+      { rot: 180, x: alongX, y: () => 0, gap: EDGE_GAP },   // top
+      { rot: 90,  x: () => 0, y: alongY, gap: EDGE_GAP },   // left
+      { rot: -90, x: () => W, y: alongY, gap: EDGE_GAP },   // right
     ];
     const side = pick(sides);
-    const w = Math.round(Math.min(innerWidth, innerHeight) * rand(.32, .45));
     const peek = document.createElement("div");
     peek.className = "peek";
     peek.style.left = side.x() + "px";
     peek.style.top = side.y() + "px";
-    peek.style.transform = `rotate(${side.rot + rand(-12, 12)}deg)`;
-    peek.innerHTML = `<div class="polaroid" style="--w:${w}px"><img src="norag.jpg?v=2" alt="NO RAGRETS"><p>NO RAGRETS 😎</p></div>`;
+    peek.style.transform = `rotate(${side.rot + rand(-6, 6)}deg)`;
+    peek.innerHTML = `<div class="polaroid" style="--w:${w}px"><img src="norag.jpg?v=2" width="480" height="525" alt="NO RAGRETS"><p>NO RAGRETS 😎</p></div>`;
     const card = peek.firstChild;
     card.addEventListener("pointerdown", e => {
       e.stopPropagation();
@@ -285,16 +292,19 @@
       explode(e.clientX + rand(-80, 80), e.clientY + rand(-80, 80), true);
     });
     document.body.appendChild(peek);
+    // Slide the whole card in (its full height plus the gap), so nothing is hidden.
+    const t = card.offsetHeight + side.gap;
+    const at = (px, deg = 0) => `translateY(${-px}px) rotate(${deg}deg)`;
     const hold = rand(1400, 2600);
     const anim = card.animate([
-      { transform: "translateY(0)", easing: "cubic-bezier(.3,1.5,.5,1)" },
-      { transform: "translateY(-92%)", offset: .18 },
-      { transform: "translateY(-86%) rotate(4deg)", offset: .3 },
-      { transform: "translateY(-92%) rotate(-4deg)", offset: .45 },
-      { transform: "translateY(-88%) rotate(3deg)", offset: .65 },
-      { transform: "translateY(-92%)", offset: .82, easing: "ease-in" },
-      { transform: "translateY(0)" },
-    ], { duration: hold + 900, easing: "ease-in-out" });
+      { transform: at(0), easing: "cubic-bezier(.3,1.4,.5,1)" },
+      { transform: at(t), offset: .18 },
+      { transform: at(t - 10, 4), offset: .3 },
+      { transform: at(t, -4), offset: .45 },
+      { transform: at(t - 6, 3), offset: .65 },
+      { transform: at(t), offset: .82, easing: "ease-in" },
+      { transform: at(0) },
+    ], { duration: hold + 900 });
     anim.onfinish = () => peek.remove();
     setTimeout(sneak, rand(2500, 6500));
   }
