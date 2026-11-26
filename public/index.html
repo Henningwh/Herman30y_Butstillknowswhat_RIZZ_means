@@ -99,6 +99,27 @@
   .eq i:nth-child(2) { animation-delay: -.3s; } .eq i:nth-child(3) { animation-delay: -.6s; }
   @keyframes eq { 0%, 100% { height: 30%; } 50% { height: 100%; } }
 
+
+  /* ---------- Song search (adds straight to the Spotify playlist) ---------- */
+  .song-search[hidden] { display: none; }
+  .song-search { margin-bottom: 16px; }
+  .song-search h3 { font-size: 18px; margin-bottom: 12px; }
+  .song-search input { width: 100%; padding: 14px 16px; border-radius: 14px; border: 1px solid var(--line);
+                       background: rgba(0,0,0,.35); color: var(--ink); font: 16px "Inter"; outline: none; }
+  .song-search input:focus { border-color: var(--c1); box-shadow: 0 0 0 3px rgba(51,225,255,.2); }
+  .results { list-style: none; margin: 10px 0 0; padding: 0; }
+  .results li { display: flex; align-items: center; gap: 12px; padding: 8px; border-radius: 12px; }
+  .results li:hover { background: rgba(255,255,255,.05); }
+  .results img { width: 44px; height: 44px; border-radius: 6px; flex: none; background: #222; }
+  .results .meta { min-width: 0; flex: 1; }
+  .results .meta b, .results .meta span { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .results .meta span { color: var(--muted); font-size: 14px; }
+  .add-btn { flex: none; border: 0; border-radius: 999px; padding: 8px 14px; font: 700 14px "Inter"; cursor: pointer;
+             background: linear-gradient(90deg, var(--c1), var(--c2)); color: #07070d; }
+  .add-btn:disabled { opacity: .6; cursor: default; }
+  .add-btn.done { background: #39ff14; }
+  .search-note { color: var(--muted); font-size: 14px; margin: 8px 0 0; min-height: 1.4em; }
+
   /* ---------- Committees ---------- */
   .committee { transition: transform .25s, border-color .25s, box-shadow .25s; overflow: hidden; }
   .committee:hover { transform: translateY(-6px) rotate(-.6deg); border-color: var(--c1); box-shadow: 0 10px 50px rgba(51,225,255,.18); }
@@ -261,6 +282,12 @@
         <h2>Music</h2>
         <p>One shared playlist. Everyone can add. Bangers only.</p>
       </header>
+      <div class="card song-search r" id="song-search" hidden>
+        <h3>🔎 Add a song</h3>
+        <input type="search" id="song-q" placeholder="Search for a song or artist…" autocomplete="off" enterkeyhint="search">
+        <p class="search-note" id="song-note"></p>
+        <ul class="results" id="song-results"></ul>
+      </div>
       <div class="card music-card r">
         <a class="btn" href="https://open.spotify.com/playlist/1KjXqBlUZ7ygePQzqCVNVn?si=5df037698fed4dd4&amp;pt=51a08893a253d85736e973c6d2f7d90c" id="playlist-link" target="_blank" rel="noopener"><span class="eq"><i></i><i></i><i></i></span> Open in Spotify &amp; add songs →</a>
         <iframe src="https://open.spotify.com/embed/playlist/1KjXqBlUZ7ygePQzqCVNVn?theme=0" height="420" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" title="Herman 30 playlist"></iframe>
@@ -719,6 +746,52 @@
     egg.animate([{ transform: "scale(1)" }, { transform: `scale(${1 + taps * .06}) rotate(${taps % 2 ? -3 : 3}deg)` }, { transform: "scale(1)" }], { duration: 200 });
     if (taps >= 5) location.href = "rizz.html";
   });
+
+
+  // ---------- Song search: add tracks straight to the Spotify playlist (via /api on the Worker) ----------
+  (async () => {
+    const box = document.getElementById("song-search");
+    try {
+      const st = await fetch("/api/songs/status").then(r => r.json());
+      if (!st.enabled) return;            // not set up yet: keep the box hidden
+    } catch { return; }                  // static preview without the Worker
+    box.hidden = false;
+    const q = document.getElementById("song-q"), list = document.getElementById("song-results"), note = document.getElementById("song-note");
+    const player = document.querySelector(".music-card iframe");
+    const esc = t => t.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+    let timer, seq = 0;
+    q.addEventListener("input", () => {
+      clearTimeout(timer);
+      timer = setTimeout(run, 350);
+    });
+    async function run() {
+      const term = q.value.trim(), my = ++seq;
+      if (term.length < 2) { list.innerHTML = ""; note.textContent = ""; return; }
+      note.textContent = "Searching…";
+      try {
+        const { tracks = [] } = await fetch("/api/songs/search?q=" + encodeURIComponent(term)).then(r => r.json());
+        if (my !== seq) return;
+        note.textContent = tracks.length ? "" : "No songs found.";
+        list.innerHTML = tracks.map((t, k) => `<li>
+          ${t.image ? `<img src="${esc(t.image)}" alt="" loading="lazy">` : `<img alt="">`}
+          <div class="meta"><b>${esc(t.name)}</b><span>${esc(t.artists)}</span></div>
+          <button class="add-btn" data-k="${k}">+ Add</button></li>`).join("");
+        list.querySelectorAll(".add-btn").forEach(b => b.addEventListener("click", () => add(b, tracks[b.dataset.k])));
+      } catch { if (my === seq) note.textContent = "Search failed – try again."; }
+    }
+    async function add(btn, t) {
+      btn.disabled = true; btn.textContent = "Adding…";
+      try {
+        const r = await fetch("/api/songs/add", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ uri: t.uri }) });
+        if (!r.ok) throw 0;
+        btn.textContent = "✓ Added"; btn.classList.add("done");
+        note.textContent = `“${t.name}” is on the playlist 🎉`;
+        player.src = player.src.split("#")[0].replace(/([?&])_r=\d+/, "") + (player.src.includes("?") ? "&" : "?") + "_r=" + Date.now();
+      } catch {
+        btn.disabled = false; btn.textContent = "+ Add"; note.textContent = "Couldn't add that one – try again.";
+      }
+    }
+  })();
 
   // ---------- Idle easter egg: after 1 minute without input, the rizz page takes over ----------
   // Add ?idle=5 to the URL to test with 5 seconds.
