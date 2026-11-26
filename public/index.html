@@ -167,6 +167,12 @@
 
   footer { text-align: center; color: var(--muted); font-size: 13px; padding-top: 40px; }
 
+
+  /* ---------- Idle easter egg: the rizz page takes over ---------- */
+  #rizz-pop { position: fixed; inset: 0; z-index: 100; background: #000; }
+  #rizz-pop[hidden] { display: none; }
+  #rizz-pop iframe { width: 100%; height: 100%; border: 0; display: block; }
+
   @media (prefers-reduced-motion: reduce) {
     .aurora i, .pane-head h2, .hero-30, .blade, .eq i { animation: none !important; }
   }
@@ -350,6 +356,8 @@
   <div class="sparks" id="sparks"></div>
 </div>
 
+<div id="rizz-pop" hidden><iframe title="Hard Rizz" id="rizz-frame"></iframe></div>
+
 <script>
 (() => {
   // ---- Set the trip start here (local time), e.g. "2027-03-12T16:00". Empty = "date TBA".
@@ -518,6 +526,36 @@
     egg.animate([{ transform: "scale(1)" }, { transform: `scale(${1 + taps * .06}) rotate(${taps % 2 ? -3 : 3}deg)` }, { transform: "scale(1)" }], { duration: 200 });
     if (taps >= 5) location.href = "rizz.html";
   });
+
+  // ---------- Idle easter egg: after 1 minute without input, the rizz page takes over ----------
+  // Add ?idle=5 to the URL to test with 5 seconds.
+  const IDLE_MS = (Number(new URLSearchParams(location.search).get("idle")) || 60) * 1000;
+  const pop = document.getElementById("rizz-pop"), frame = document.getElementById("rizz-frame");
+  let idleTimer;
+  function armIdle() {
+    clearTimeout(idleTimer);
+    if (pop.hidden) idleTimer = setTimeout(openRizz, IDLE_MS);
+  }
+  function openRizz() {
+    frame.src = "rizz.html";
+    pop.hidden = false;
+    pop.animate([{ clipPath: "circle(0% at 50% 50%)", filter: "hue-rotate(0deg)" },
+                 { clipPath: "circle(75% at 50% 50%)", filter: "hue-rotate(360deg)" }],
+                { duration: 700, easing: "cubic-bezier(.7,0,.3,1)" });
+    frame.focus();
+  }
+  function closeRizz() {
+    pop.animate([{ clipPath: "circle(75% at 50% 50%)" }, { clipPath: "circle(0% at 50% 50%)" }],
+                { duration: 600, easing: "cubic-bezier(.7,0,.3,1)" }).onfinish = () => {
+      pop.hidden = true; frame.src = "about:blank"; armIdle();
+    };
+  }
+  addEventListener("message", e => {
+    if (e.source === frame.contentWindow && e.data && e.data.type === "rizz-escaped") closeRizz();
+  });
+  ["pointermove", "pointerdown", "keydown", "wheel", "touchstart", "scroll"].forEach(ev =>
+    addEventListener(ev, armIdle, { passive: true, capture: true }));
+  armIdle();
 })();
 </script>
 </body>

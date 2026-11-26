@@ -27,3 +27,15 @@ test("the NO RAGRETS photo the easter egg references exists", () => {
   assert.match(rizz, /norag\.jpg/);
   assert.ok(readFileSync("public/norag.jpg").length > 1000);
 });
+
+test("idle easter egg opens the rizz page after a minute", () => {
+  assert.match(html, /id="rizz-pop"/);
+  assert.match(html, /\|\| 60\) \* 1000/);
+  assert.match(html, /rizz-escaped/);
+});
+
+test("rizz page has the chicken game to escape", () => {
+  assert.match(rizz, /const NEED = 3/);
+  assert.match(rizz, /rizz-escaped/);
+  assert.match(rizz, /ESCAPE THE RIZZ/);
+});

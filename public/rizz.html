@@ -166,6 +166,40 @@
     color: #ff0040; text-shadow: 2px 2px 0 #00e5ff;
   }
 
+
+  /* ---------- Chicken hunt (escape game) ---------- */
+  body.hunt, body.hunt * { cursor: none !important; }
+  .hud {
+    position: fixed; top: 12px; left: 12px; z-index: 20; max-width: min(360px, calc(100vw - 24px));
+    background: #000; color: #fff; border: 4px solid #ffea00; box-shadow: 6px 6px 0 #ff0040;
+    padding: 10px 14px; transform: rotate(-1.5deg); font-size: clamp(13px, 1.8vw, 16px); line-height: 1.35;
+  }
+  .hud h2 { margin: 0 0 6px; font-family: "Bungee Shade", Impact, sans-serif; font-size: clamp(18px, 3vw, 26px);
+            color: #39ff14; text-shadow: 0 0 10px #39ff14; line-height: 1; }
+  .hud ol { margin: 0; padding-left: 20px; }
+  .hud .count { margin-top: 8px; font-size: clamp(20px, 3vw, 28px); letter-spacing: .1em; }
+  .hud .count b { color: #ffea00; }
+  .chicken {
+    position: fixed; z-index: 15; font-size: clamp(54px, 9vmin, 90px); line-height: 1; translate: -50% -50%;
+    pointer-events: none; filter: drop-shadow(0 0 12px #fff) drop-shadow(4px 4px 0 #000); user-select: none;
+  }
+  .reticle {
+    position: fixed; z-index: 30; left: 0; top: 0; pointer-events: none; width: 0; height: 0;
+  }
+  .reticle svg { position: absolute; overflow: visible; filter: drop-shadow(0 0 4px #ff0040) drop-shadow(0 0 1px #000); }
+  .feather { position: fixed; z-index: 16; pointer-events: none; font-size: 30px; translate: -50% -50%; }
+  .blam {
+    position: fixed; z-index: 17; pointer-events: none; translate: -50% -50%;
+    font-family: "Bungee Shade", Impact, sans-serif; font-size: clamp(36px, 7vw, 80px);
+    color: #ffea00; text-shadow: 4px 4px 0 #ff0040, -2px -2px 0 #000; white-space: nowrap;
+  }
+  .win {
+    position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; text-align: center; padding: 16px;
+    background: rgba(0,0,0,.75); font-family: "Bungee Shade", Impact, sans-serif;
+    font-size: clamp(36px, 9vw, 120px); line-height: 1; color: #39ff14; text-shadow: 0 0 20px #39ff14, 6px 6px 0 #ff0040;
+  }
+  .win small { display: block; font-family: "Comic Sans MS", cursive; font-size: clamp(16px, 3vw, 28px); color: #fff; text-shadow: none; margin-top: 16px; }
+
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: 0s !important; animation-iteration-count: 1 !important; }
   }
@@ -181,6 +215,19 @@
     <h1>Hard Rizz coming up....</h1>
     <p class="hint">👆 click anywhere for MORE EXPLOSIONS 👆</p>
   </main>
+
+
+  <div class="hud" id="hud">
+    <h2>🔫 ESCAPE THE RIZZ</h2>
+    <ol>
+      <li>Shoot <b>3 chickens</b> 🐔 to get out of here.</li>
+      <li>They pop up and vanish fast – be quick.</li>
+      <li>Your crosshair grows and shrinks. Fire when it's <b>BIG</b>.</li>
+      <li>Click / tap to shoot.</li>
+    </ol>
+    <div class="count">🐔 <b id="hits">0</b> / 3</div>
+  </div>
+  <div class="reticle" id="reticle"></div>
 
   <div class="flames" id="flames"></div>
 
@@ -309,6 +356,106 @@
     setTimeout(sneak, rand(2500, 6500));
   }
   setTimeout(sneak, 1500);
+
+  // ---------- Chicken hunt: shoot 3 chickens to escape ----------
+  (() => {
+    const NEED = 3;
+    const ret = document.getElementById("reticle");
+    const hitsEl = document.getElementById("hits");
+    document.body.classList.add("hunt");
+    let px = innerWidth / 2, py = innerHeight / 2, r = 40, hits = 0, done = false, chicken = null;
+
+    function drawReticle() {
+      const g = r * 0.35; // gap in the cross lines
+      ret.style.transform = `translate(${px}px, ${py}px)`;
+      ret.innerHTML = `<svg width="0" height="0"><g fill="none" stroke="#ff0040" stroke-width="3" stroke-linecap="round">
+        <circle cx="0" cy="0" r="${r}"/>
+        <line x1="${-r - 12}" y1="0" x2="${-g}" y2="0"/><line x1="${g}" y1="0" x2="${r + 12}" y2="0"/>
+        <line x1="0" y1="${-r - 12}" x2="0" y2="${-g}"/><line x1="0" y1="${g}" x2="0" y2="${r + 12}"/></g>
+        <circle cx="0" cy="0" r="2.5" fill="#ff0040"/></svg>`;
+    }
+    (function pulse(t) {
+      // Two out-of-sync waves so the size is hard to predict: ~10px to ~80px radius
+      r = 45 + 22 * Math.sin(t / 420) + 13 * Math.sin(t / 157 + 1.3);
+      drawReticle();
+      if (!done) requestAnimationFrame(pulse);
+    })(0);
+    addEventListener("pointermove", e => { px = e.clientX; py = e.clientY; }, { passive: true });
+
+    function spawnChicken() {
+      if (done) return;
+      const c = document.createElement("div");
+      c.className = "chicken";
+      c.textContent = Math.random() < .5 ? "🐔" : "🐓";
+      c.style.left = rand(10, 88) + "vw";
+      c.style.top = rand(22, 70) + "vh";
+      if (Math.random() < .5) c.style.transform = "scaleX(-1)";
+      document.body.appendChild(c);
+      c.animate([{ scale: 0 }, { scale: 1.25 }, { scale: 1 }], { duration: 220, easing: "ease-out" });
+      chicken = c;
+      const life = rand(650, 1300) - hits * 120; // a bit faster after each hit
+      c._timer = setTimeout(() => {
+        if (chicken !== c) return;
+        chicken = null; c.classList.add("gone");
+        c.animate([{ scale: 1 }, { scale: 0 }], { duration: 150 }).onfinish = () => c.remove();
+        setTimeout(spawnChicken, rand(250, 900));
+      }, life);
+    }
+
+    function pop(cls, text, x, y, kf, ms) {
+      const el = document.createElement("div");
+      el.className = cls; el.textContent = text;
+      el.style.left = x + "px"; el.style.top = y + "px";
+      document.body.appendChild(el);
+      el.animate(kf, { duration: ms, easing: "cubic-bezier(.2,.7,.3,1)", fill: "forwards" }).onfinish = () => el.remove();
+    }
+
+    function shoot(x, y) {
+      if (done) return;
+      // recoil
+      ret.animate([{ translate: "0 0" }, { translate: "6px -14px" }, { translate: "0 0" }], { duration: 160 });
+      if (!chicken) return;
+      const b = chicken.getBoundingClientRect();
+      const cx = b.left + b.width / 2, cy = b.top + b.height / 2;
+      if (Math.hypot(cx - x, cy - y) > r + b.width * 0.3) {
+        pop("blam", "MISS", x, y - 40, [{ opacity: 1, transform: "scale(.6)" }, { opacity: 0, transform: "scale(1) translateY(-30px)" }], 600);
+        return;
+      }
+      const c = chicken; chicken = null; clearTimeout(c._timer); c.remove();
+      hits++; hitsEl.textContent = hits;
+      hitsEl.animate([{ transform: "scale(2.2)" }, { transform: "scale(1)" }], { duration: 400 });
+      pop("blam", pick(["BLAM!", "BOOM!", "POW!", "BUK-BAWK!"]), cx, cy - 50,
+          [{ opacity: 1, transform: "scale(.3) rotate(-10deg)" }, { opacity: 1, transform: "scale(1.2) rotate(6deg)", offset: .4 }, { opacity: 0, transform: "scale(1) rotate(0)" }], 900);
+      for (let i = 0; i < 12; i++) {
+        const a = rand(0, Math.PI * 2), d = rand(60, 220);
+        pop("feather", pick(["🪶", "🪶", "🍗", "💨"]), cx, cy,
+            [{ opacity: 1, transform: "translate(0,0) rotate(0)" },
+             { opacity: 0, transform: `translate(${Math.cos(a) * d}px, ${Math.sin(a) * d + 80}px) rotate(${rand(-360, 360)}deg)` }],
+            rand(700, 1200));
+      }
+      if (hits >= NEED) return win();
+      setTimeout(spawnChicken, rand(400, 900));
+    }
+
+    function win() {
+      done = true;
+      document.body.classList.remove("hunt");
+      ret.remove();
+      const w = document.createElement("div");
+      w.className = "win";
+      w.innerHTML = "<div>RIZZ<br>NEUTRALIZED ✅<small>Returning to civilization...</small></div>";
+      document.body.appendChild(w);
+      w.animate([{ opacity: 0, transform: "scale(3)" }, { opacity: 1, transform: "scale(1)" }], { duration: 400, easing: "ease-out" });
+      setTimeout(() => {
+        if (window.parent !== window) window.parent.postMessage({ type: "rizz-escaped" }, location.origin === "null" ? "*" : location.origin);
+        else location.href = "index.html";
+      }, 1800);
+    }
+
+    // capture phase so it fires even when the NO RAGRETS card stops propagation
+    addEventListener("pointerdown", e => { px = e.clientX; py = e.clientY; drawReticle(); shoot(px, py); }, true);
+    setTimeout(spawnChicken, 1200);
+  })();
 </script>
 </body>
 </html>
