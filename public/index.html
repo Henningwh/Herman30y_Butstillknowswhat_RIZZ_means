@@ -10,6 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;800;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="dev-sticker.css">
+<link rel="stylesheet" href="crew-sunset.css">
 <style>
   :root {
     --bg: #07070d; --ink: #f3f1ff; --muted: #9a98b8;
@@ -608,6 +609,14 @@
   <div class="heist-skip">tap to skip</div>
 </div>
 
+<div id="crew-sunset" class="crew-sunset" hidden aria-hidden="true">
+  <div class="crew-sunset-frame">
+    <img class="crew-sunset-day" src="crew-day.jpg" width="1198" height="656" alt="">
+    <img class="crew-sunset-night" src="crew-night.jpg" width="1198" height="656" alt="">
+    <span class="crew-sunset-sun"></span>
+    <span class="crew-sunset-amber"></span>
+  </div>
+</div>
 <div id="rizz-pop" hidden><iframe title="Hard Rizz" id="rizz-frame"></iframe></div>
 
 <script>
@@ -760,6 +769,19 @@
       try { await (await import("./gatling.js")).playGatling(() => show(i)); } catch { show(i); }
       busy = false; fx.classList.remove("busy");
       if (location.hash.slice(1) !== ids[cur]) go(ids.indexOf(location.hash.slice(1)));
+      return;
+    }
+    if (ids[i] === "committees") {
+      try {
+        const { playCrewSunset } = await import("./crew-sunset.js");
+        await playCrewSunset(() => showFromHash(i));
+      } catch {
+        showFromHash(i);
+      } finally {
+        busy = false;
+        fx.classList.remove("busy");
+      }
+      if (location.hash !== requestedHash) go(fromHash());
       return;
     }
     if (ids[i] === "music") {
