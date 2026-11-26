@@ -12,3 +12,8 @@ test("page has a title and is not indexed", () => {
   assert.match(html, /<title>[^<]+<\/title>/);
   assert.match(readFileSync("public/_headers", "utf8"), /noindex/);
 });
+
+test("the NO RAGRETS photo the page references exists", () => {
+  assert.match(html, /norag\.jpg/);
+  assert.ok(readFileSync("public/norag.jpg").length > 1000);
+});

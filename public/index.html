@@ -150,6 +150,22 @@
 
   .hint { font-size: clamp(12px, 2vw, 18px); color: #fff; background: #b300ff; padding: 4px 12px; transform: rotate(-3deg); border: 3px dotted #39ff14; }
 
+  /* Sneaky NO RAGRETS guy: anchored on a screen edge, rotated so his head always points inward */
+  .peek { position: fixed; width: 0; height: 0; z-index: 9; pointer-events: none; transform-origin: 0 0; }
+  .polaroid {
+    position: absolute; left: calc(var(--w) / -2); top: 0;
+    width: var(--w); padding: 10px 10px 0;
+    background: #fff; border: 4px solid #ff00d4; border-radius: 4px;
+    box-shadow: 0 0 0 4px #ffea00, 0 0 40px 10px #00e5ff;
+    pointer-events: auto; cursor: pointer;
+  }
+  .polaroid img { display: block; width: 100%; height: auto; }
+  .polaroid p {
+    margin: 0; padding: 6px 0 10px; text-align: center;
+    font-family: "Rubik Glitch", cursive; font-size: calc(var(--w) / 9);
+    color: #ff0040; text-shadow: 2px 2px 0 #00e5ff;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: 0s !important; animation-iteration-count: 1 !important; }
   }
@@ -245,6 +261,44 @@
     setInterval(chuck, 1200);
     car(); chuck();
   }
+  // NO RAGRETS guy sneaks in from a random edge at random (but frequent) intervals.
+  // Each edge rotates the card so his head faces into the screen, never off it.
+  function sneak() {
+    const sides = [
+      { rot: 0,   x: () => rand(.15, .85) * innerWidth, y: () => innerHeight }, // bottom
+      { rot: 180, x: () => rand(.15, .85) * innerWidth, y: () => 0 },           // top
+      { rot: 90,  x: () => 0, y: () => rand(.2, .8) * innerHeight },            // left
+      { rot: -90, x: () => innerWidth, y: () => rand(.2, .8) * innerHeight },   // right
+    ];
+    const side = pick(sides);
+    const w = Math.round(Math.min(innerWidth, innerHeight) * rand(.32, .45));
+    const peek = document.createElement("div");
+    peek.className = "peek";
+    peek.style.left = side.x() + "px";
+    peek.style.top = side.y() + "px";
+    peek.style.transform = `rotate(${side.rot + rand(-12, 12)}deg)`;
+    peek.innerHTML = `<div class="polaroid" style="--w:${w}px"><img src="norag.jpg" alt="NO RAGRETS"><p>NO RAGRETS 😎</p></div>`;
+    const card = peek.firstChild;
+    card.addEventListener("pointerdown", e => {
+      e.stopPropagation();
+      explode(e.clientX, e.clientY, true);
+      explode(e.clientX + rand(-80, 80), e.clientY + rand(-80, 80), true);
+    });
+    document.body.appendChild(peek);
+    const hold = rand(1400, 2600);
+    const anim = card.animate([
+      { transform: "translateY(0)", easing: "cubic-bezier(.3,1.5,.5,1)" },
+      { transform: "translateY(-92%)", offset: .18 },
+      { transform: "translateY(-86%) rotate(4deg)", offset: .3 },
+      { transform: "translateY(-92%) rotate(-4deg)", offset: .45 },
+      { transform: "translateY(-88%) rotate(3deg)", offset: .65 },
+      { transform: "translateY(-92%)", offset: .82, easing: "ease-in" },
+      { transform: "translateY(0)" },
+    ], { duration: hold + 900, easing: "ease-in-out" });
+    anim.onfinish = () => peek.remove();
+    setTimeout(sneak, rand(2500, 6500));
+  }
+  setTimeout(sneak, 1500);
 </script>
 </body>
 </html>
