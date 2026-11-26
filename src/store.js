@@ -49,6 +49,15 @@ export class GroupStore {
       CREATE TABLE IF NOT EXISTS sessions (token TEXT PRIMARY KEY, grp TEXT NOT NULL, expires INTEGER NOT NULL);
       CREATE TABLE IF NOT EXISTS attempts (key TEXT PRIMARY KEY, count INTEGER NOT NULL, since INTEGER NOT NULL);
     `);
+    // Existing rosters keep their data across deploys. Backfill only Jørgen's empty media.
+    const photoBackfill = "party:jorgen-photo:v1";
+    if (!this.rows("SELECT 1 FROM seeded WHERE grp = ?", photoBackfill).length) {
+      this.sql.exec(
+        "UPDATE members SET photo = ? WHERE grp = ? AND name = ? AND photo = '' AND video = ''",
+        "crew/jorgen.jpg", "party", "Jørgen"
+      );
+      this.sql.exec("INSERT INTO seeded (grp) VALUES (?)", photoBackfill);
+    }
   }
 
   rows(q, ...b) { return this.sql.exec(q, ...b).toArray(); }
