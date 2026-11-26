@@ -101,27 +101,6 @@
   @keyframes eq { 0%, 100% { height: 30%; } 50% { height: 100%; } }
 
 
-  /* ---------- Song search (adds straight to the Spotify playlist) ---------- */
-  .song-search[hidden] { display: none; }
-  .song-search { margin-bottom: 16px; }
-  .song-search h3 { font-size: 18px; margin-bottom: 12px; }
-  .song-search input { width: 100%; padding: 14px 16px; border-radius: 14px; border: 1px solid var(--line);
-                       background: rgba(0,0,0,.35); color: var(--ink); font: 16px "Inter"; outline: none; }
-  .song-search input:focus { border-color: var(--c1); box-shadow: 0 0 0 3px rgba(51,225,255,.2); }
-  .results { list-style: none; margin: 10px 0 0; padding: 0; }
-  .results li { display: flex; align-items: center; gap: 12px; padding: 8px; border-radius: 12px; }
-  .results li:hover { background: rgba(255,255,255,.05); }
-  .results img { width: 44px; height: 44px; border-radius: 6px; flex: none; background: #222; }
-  .results .meta { min-width: 0; flex: 1; }
-  .results .meta b, .results .meta span { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .results .meta span { color: var(--muted); font-size: 14px; }
-  .add-btn { flex: none; border: 0; border-radius: 999px; padding: 8px 14px; font: 700 14px "Inter"; cursor: pointer;
-             background: linear-gradient(90deg, var(--c1), var(--c2)); color: #07070d; }
-  .add-btn:disabled { opacity: .6; cursor: default; }
-  .add-btn.done { background: #39ff14; }
-  .search-note { color: var(--muted); font-size: 14px; margin: 8px 0 0; min-height: 1.4em; }
-
-
   /* ---------- Tracklist read from the playlist ---------- */
   .tracklist[hidden] { display: none; }
   .tracklist { margin-bottom: 16px; }
@@ -321,12 +300,6 @@
         <h2>Music</h2>
         <p>One shared playlist. Everyone can add. Bangers only.</p>
       </header>
-      <div class="card song-search r" id="song-search" hidden>
-        <h3>🔎 Add a song</h3>
-        <input type="search" id="song-q" placeholder="Search for a song or artist…" autocomplete="off" enterkeyhint="search">
-        <p class="search-note" id="song-note"></p>
-        <ul class="results" id="song-results"></ul>
-      </div>
       <div class="card tracklist r" id="tracklist" hidden>
         <h3>🎶 On the playlist <small id="track-count"></small></h3>
         <ol class="tracks" id="tracks"></ol>
@@ -824,69 +797,23 @@
   });
 
 
-  // ---------- Song search: add tracks straight to the Spotify playlist (via /api on the Worker) ----------
+  // ---------- Tracklist: songs read from the public playlist (via /api/songs/list on the Worker) ----------
   (async () => {
-    const box = document.getElementById("song-search");
-    try {
-      const st = await fetch("/api/songs/status").then(r => r.json());
-      if (!st.enabled) return;            // not set up yet: keep the box hidden
-    } catch { return; }                  // static preview without the Worker
-    box.hidden = false;
+    const card = document.getElementById("tracklist"), list = document.getElementById("tracks"), count = document.getElementById("track-count");
     const esc = t => String(t).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
-    const listCard = document.getElementById("tracklist"), listEl = document.getElementById("tracks"), countEl = document.getElementById("track-count");
     const fmt = ms => `${Math.floor(ms / 60000)}:${String(Math.floor(ms / 1000) % 60).padStart(2, "0")}`;
-    async function loadList(freshName) {
-      try {
-        const { tracks } = await fetch("/api/songs/list").then(r => r.json());
-        if (!Array.isArray(tracks)) return;
-        listCard.hidden = false;
-        countEl.textContent = `${tracks.length} song${tracks.length === 1 ? "" : "s"}`;
-        listEl.innerHTML = tracks.length ? tracks.map(t => `<li${t.name === freshName ? ' class="fresh"' : ""}>
-          ${t.image ? `<img src="${esc(t.image)}" alt="" loading="lazy">` : `<img alt="">`}
-          <div class="meta"><a href="${esc(t.url)}" target="_blank" rel="noopener">${esc(t.name)}</a><span>${esc(t.artists)}</span></div>
-          <span class="dur">${fmt(t.ms)}</span></li>`).join("")
-          : `<li style="color:var(--muted)">Empty so far – be the first to add a banger.</li>`;
-        listEl.querySelectorAll("li").forEach((li, k) => li.animate(
-          [{ opacity: 0, transform: "translateX(-16px)" }, { opacity: 1, transform: "none" }],
-          { duration: 350, delay: Math.min(k, 12) * 35, easing: "ease-out", fill: "backwards" }));
-      } catch {}
-    }
-    const q = document.getElementById("song-q"), list = document.getElementById("song-results"), note = document.getElementById("song-note");
-    const player = document.querySelector(".music-card iframe");
-    loadList();
-    let timer, seq = 0;
-    q.addEventListener("input", () => {
-      clearTimeout(timer);
-      timer = setTimeout(run, 350);
-    });
-    async function run() {
-      const term = q.value.trim(), my = ++seq;
-      if (term.length < 2) { list.innerHTML = ""; note.textContent = ""; return; }
-      note.textContent = "Searching…";
-      try {
-        const { tracks = [] } = await fetch("/api/songs/search?q=" + encodeURIComponent(term)).then(r => r.json());
-        if (my !== seq) return;
-        note.textContent = tracks.length ? "" : "No songs found.";
-        list.innerHTML = tracks.map((t, k) => `<li>
-          ${t.image ? `<img src="${esc(t.image)}" alt="" loading="lazy">` : `<img alt="">`}
-          <div class="meta"><b>${esc(t.name)}</b><span>${esc(t.artists)}</span></div>
-          <button class="add-btn" data-k="${k}">+ Add</button></li>`).join("");
-        list.querySelectorAll(".add-btn").forEach(b => b.addEventListener("click", () => add(b, tracks[b.dataset.k])));
-      } catch { if (my === seq) note.textContent = "Search failed – try again."; }
-    }
-    async function add(btn, t) {
-      btn.disabled = true; btn.textContent = "Adding…";
-      try {
-        const r = await fetch("/api/songs/add", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ uri: t.uri }) });
-        if (!r.ok) throw 0;
-        btn.textContent = "✓ Added"; btn.classList.add("done");
-        note.textContent = `“${t.name}” is on the playlist 🎉`;
-        loadList(t.name);
-        player.src = player.src.split("#")[0].replace(/([?&])_r=\d+/, "") + (player.src.includes("?") ? "&" : "?") + "_r=" + Date.now();
-      } catch {
-        btn.disabled = false; btn.textContent = "+ Add"; note.textContent = "Couldn't add that one – try again.";
-      }
-    }
+    let tracks;
+    try { ({ tracks } = await fetch("/api/songs/list").then(r => r.json())); } catch { return; }
+    if (!Array.isArray(tracks)) return;   // couldn't read it: the Spotify player below still works
+    card.hidden = false;
+    count.textContent = `${tracks.length} song${tracks.length === 1 ? "" : "s"}`;
+    list.innerHTML = tracks.length ? tracks.map(t => `<li>
+        <div class="meta">${t.url ? `<a href="${esc(t.url)}" target="_blank" rel="noopener">${esc(t.name)}</a>` : `<a>${esc(t.name)}</a>`}<span>${esc(t.artists)}</span></div>
+        <span class="dur">${t.ms ? fmt(t.ms) : ""}</span></li>`).join("")
+      : `<li style="color:var(--muted)">Empty so far – be the first to add a banger.</li>`;
+    list.querySelectorAll("li").forEach((li, k) => li.animate(
+      [{ opacity: 0, transform: "translateX(-16px)" }, { opacity: 1, transform: "none" }],
+      { duration: 350, delay: Math.min(k, 12) * 35, easing: "ease-out", fill: "backwards" }));
   })();
 
   // ---------- Idle easter egg: after 1 minute without input, the rizz page takes over ----------

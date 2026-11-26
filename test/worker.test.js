@@ -1,68 +1,41 @@
 import { test, beforeEach } from "node:test";
 import assert from "node:assert/strict";
-import worker from "../src/worker.js";
+import worker, { parseEmbed } from "../src/worker.js";
 
-const env = {
-  SPOTIFY_CLIENT_ID: "id", SPOTIFY_CLIENT_SECRET: "secret",
-  SPOTIFY_REFRESH_TOKEN: "refresh", SPOTIFY_PLAYLIST_ID: "PLAYLIST",
-  ASSETS: { fetch: () => new Response("static") },
-};
-let calls;
+const page = data => `<html><body><script id="__NEXT_DATA__" type="application/json">${JSON.stringify(data)}</script></body></html>`;
+const sample = page({ props: { pageProps: { state: { data: { entity: { type: "playlist", trackList: [
+  { uri: "spotify:track:" + "a".repeat(22), title: "Dancing Queen", subtitle: "ABBA", duration: 231000 },
+  { uri: "spotify:track:" + "b".repeat(22), title: "Take On Me", subtitle: "a-ha", duration: 225000 },
+] } } } } } });
+
+const env = { SPOTIFY_PLAYLIST_ID: "PLAYLIST", ASSETS: { fetch: () => new Response("static") } };
+const ctx = { waitUntil() {} };
+let fetched;
 beforeEach(() => {
-  calls = [];
-  globalThis.fetch = async (url, init = {}) => {
-    calls.push({ url: String(url), init });
-    if (String(url).endsWith("/api/token")) return Response.json({ access_token: "AT", expires_in: 3600 });
-    if (String(url).includes("/v1/search")) return Response.json({ tracks: { items: [
-      { uri: "spotify:track:" + "a".repeat(22), name: "Song", artists: [{ name: "Band" }], album: { name: "LP", images: [{ url: "big" }, { url: "small" }] }, duration_ms: 1000 },
-    ] } });
-    if (String(url).includes("/items")) return new Response("", { status: 404 });
-    if (String(url).includes("/tracks")) return Response.json({ snapshot_id: "x" }, { status: 201 });
-    return new Response("?", { status: 500 });
-  };
+  fetched = [];
+  globalThis.caches = { default: { match: async () => undefined, put: async () => {} } };
+  globalThis.fetch = async url => { fetched.push(String(url)); return new Response(sample); };
 });
-const call = (path, init) => worker.fetch(new Request("https://site.example" + path, init), env);
+const call = path => worker.fetch(new Request("https://site.example" + path), env, ctx);
 
-test("non-api paths are served from static assets", async () => {
-  assert.equal(await (await call("/")).text(), "static");
+test("parses the track list out of the embed page", () => {
+  assert.deepEqual(parseEmbed(sample)[0], {
+    name: "Dancing Queen", artists: "ABBA", ms: 231000, url: "https://open.spotify.com/track/" + "a".repeat(22),
+  });
 });
 
-test("status reports whether Spotify is configured", async () => {
-  assert.deepEqual(await (await call("/api/songs/status")).json(), { enabled: true });
-  const r = await worker.fetch(new Request("https://site.example/api/songs/status"), { ...env, SPOTIFY_REFRESH_TOKEN: "" });
-  assert.deepEqual(await r.json(), { enabled: false });
-});
-
-test("search returns trimmed track info", async () => {
-  const { tracks } = await (await call("/api/songs/search?q=song")).json();
-  assert.equal(tracks[0].artists, "Band");
-  assert.equal(tracks[0].image, "small");
-});
-
-test("add validates the uri and falls back to the classic tracks endpoint", async () => {
-  assert.equal((await call("/api/songs/add", { method: "POST", body: JSON.stringify({ uri: "nope" }) })).status, 400);
-  const r = await call("/api/songs/add", { method: "POST", body: JSON.stringify({ uri: "spotify:track:" + "a".repeat(22) }) });
-  assert.equal(r.status, 200);
-  assert.ok(calls.some(c => c.url.endsWith("/playlists/PLAYLIST/tracks")));
-});
-
-test("setup login is closed once a refresh token exists", async () => {
-  assert.equal((await call("/api/spotify/login")).status, 403);
-  const r = await worker.fetch(new Request("https://site.example/api/spotify/login"), { ...env, SPOTIFY_REFRESH_TOKEN: "" });
-  assert.equal(r.status, 302);
-  assert.match(r.headers.get("location"), /redirect_uri=https%3A%2F%2Fsite\.example%2Fapi%2Fspotify%2Fcallback/);
-});
-
-test("list reads the playlist newest first, handling item/track naming", async () => {
-  globalThis.fetch = async url => {
-    if (String(url).endsWith("/api/token")) return Response.json({ access_token: "AT", expires_in: 3600 });
-    if (String(url).includes("/items")) return Response.json({ items: [
-      { added_at: "2026-01-01T00:00:00Z", track: { name: "Old", artists: [{ name: "A" }], duration_ms: 61000 } },
-      { added_at: "2026-02-01T00:00:00Z", item: { name: "New", artists: [{ name: "B" }], duration_ms: 1000 } },
-      { added_at: "2026-03-01T00:00:00Z", track: null },
-    ] });
-    return new Response("?", { status: 500 });
-  };
+test("list endpoint reads the public embed page, no credentials", async () => {
   const { tracks } = await (await call("/api/songs/list")).json();
-  assert.deepEqual(tracks.map(t => t.name), ["New", "Old"]);
+  assert.deepEqual(tracks.map(t => t.name), ["Dancing Queen", "Take On Me"]);
+  assert.deepEqual(fetched, ["https://open.spotify.com/embed/playlist/PLAYLIST"]);
+});
+
+test("list endpoint reports an error when the page can't be parsed", async () => {
+  globalThis.fetch = async () => new Response("<html>nope</html>");
+  assert.equal((await call("/api/songs/list")).status, 502);
+});
+
+test("other paths are served from static assets", async () => {
+  assert.equal(await (await call("/")).text(), "static");
+  assert.equal((await call("/api/nope")).status, 404);
 });

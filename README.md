@@ -13,19 +13,11 @@ npm run build              # copies public/ -> dist/
 npx wrangler dev           # local preview
 ```
 
-## Song search (adds straight to the Spotify playlist)
+## Playlist tracklist
 
-`src/worker.js` serves the site and a small `/api/songs/*` API. The search box on the Music pane stays hidden until it's set up. One-time setup, done by the **playlist owner**:
-
-1. Go to developer.spotify.com → Dashboard → **Create app**. Add the redirect URI
-   `https://<your-site>/api/spotify/callback` (your workers.dev URL) and tick **Web API**.
-2. In Cloudflare → Workers → this worker → **Settings → Variables and Secrets**, add two **secrets**:
-   `SPOTIFY_CLIENT_ID` and `SPOTIFY_CLIENT_SECRET` (from the Spotify app's settings).
-3. Open `https://<your-site>/api/spotify/login`, log in with the Spotify account that owns the playlist,
-   and copy the refresh token it shows.
-4. Add it as a third secret: `SPOTIFY_REFRESH_TOKEN`. The search box now appears on the Music pane.
-
-The playlist ID lives in `wrangler.jsonc` (`SPOTIFY_PLAYLIST_ID`). Anyone with the site link can add songs.
+`src/worker.js` serves the site plus `/api/songs/list`, which reads the songs on the playlist from Spotify's public
+embed page – no Spotify login or API keys. The playlist ID lives in `wrangler.jsonc` (`SPOTIFY_PLAYLIST_ID`).
+People add songs with the "Open in Spotify & add songs" button (the playlist's collaborative invite link).
 
 ## Deploy
 
