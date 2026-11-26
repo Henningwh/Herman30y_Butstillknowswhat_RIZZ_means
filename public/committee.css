@@ -24,6 +24,9 @@ h3 { font-size: 18px; overflow-wrap: anywhere; }
 .member-grid[hidden] { display: none; }
 .member-card { overflow: hidden; border: 1px solid #ffffff38; border-radius: 18px; background: #ffffff0a; }
 .member-card :is(img, video) { display: block; width: 100%; aspect-ratio: 9 / 16; object-fit: contain; background: #100c1c; }
+.member-initial { display: grid; place-items: center; aspect-ratio: 4 / 3; color: var(--accent);
+  background: radial-gradient(ellipse, color-mix(in srgb, var(--accent) 22%, #1d142d), #141020);
+  font: 800 64px/1 "Unbounded", sans-serif; }
 .member-card > div { padding: 18px; }
 .member-card p { margin: 10px 0 0; color: var(--muted); overflow-wrap: anywhere; }
 .member-card strong { display: block; color: var(--accent); }

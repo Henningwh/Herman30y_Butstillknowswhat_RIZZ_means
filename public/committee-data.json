@@ -25,7 +25,11 @@
     "icon": "🎉",
     "accent": "#ff89dc",
     "description": "Runs the games, speeches and Saturday night program.",
-    "members": []
+    "members": [
+      {
+        "name": "Jørgen"
+      }
+    ]
   },
   "development": {
     "title": "Sick Development",

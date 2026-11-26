@@ -37,7 +37,11 @@ if (Object.hasOwn(committees, team)) {
       } else if (photo) {
         image.src = photo;
       } else {
-        image.replaceWith(Object.assign(document.createElement("div"), { className: "no-photo", textContent: "📷" }));
+        const placeholder = document.createElement("span");
+        placeholder.className = "member-initial";
+        placeholder.setAttribute("aria-hidden", "true");
+        placeholder.textContent = Array.from(name)[0];
+        image.replaceWith(placeholder);
       }
       const heading = card.querySelector("h3");
       if (scene === "grill") {
@@ -50,7 +54,9 @@ if (Object.hasOwn(committees, team)) {
       } else {
         heading.textContent = name;
       }
-      card.querySelector("span").textContent = funFact;
+      const fact = card.querySelector("p");
+      if (funFact) fact.querySelector("span").textContent = funFact;
+      else fact.remove();
       if (admin?.isAdmin() && member.id) admin.decorateCard(li, member);
       list.append(card);
     }
