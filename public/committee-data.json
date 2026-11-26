@@ -1,0 +1,63 @@
+{
+  "transport": {
+    "title": "Transport",
+    "icon": "🚚",
+    "accent": "#57e8ff",
+    "description": "Coordinates rides and gets everyone’s luggage to the cabin.",
+    "members": []
+  },
+  "lunch": {
+    "title": "Lunch",
+    "icon": "🥪",
+    "accent": "#baef85",
+    "description": "Plans lunch and makes sure there’s enough for everyone.",
+    "members": [
+      {
+        "name": "Henrik Buck Christoffersen",
+        "photo": "crew/henrik.png",
+        "funFact": "har aldri kokt Gilde grillpølser. Aldri.",
+        "scene": "grill"
+      }
+    ]
+  },
+  "party": {
+    "title": "Party",
+    "icon": "🎉",
+    "accent": "#ff89dc",
+    "description": "Runs the games, speeches and Saturday night program.",
+    "members": []
+  },
+  "development": {
+    "title": "Sick Development",
+    "icon": "⚡",
+    "accent": "#ca9fff",
+    "description": "Builds the site and the weekend’s digital surprises.",
+    "members": [
+      {
+        "name": "Henning",
+        "video": "crew/henning.mp4",
+        "photo": "crew/henning.jpg",
+        "funFact": "digger skillpadder"
+      },
+      {
+        "name": "Even",
+        "photo": "crew/even.jpg",
+        "funFact": "synes skillpadder er helt ok"
+      }
+    ]
+  },
+  "dinner": {
+    "title": "Dinner",
+    "icon": "🍳",
+    "accent": "#ffc780",
+    "description": "Plans the dinner menu, shops and runs the kitchen.",
+    "members": []
+  },
+  "bar": {
+    "title": "Bar",
+    "icon": "🍻",
+    "accent": "#e9dc79",
+    "description": "Keeps the bar stocked and the glasses full.",
+    "members": []
+  }
+}

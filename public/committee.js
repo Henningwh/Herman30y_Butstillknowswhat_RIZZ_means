@@ -1,46 +1,11 @@
 import { mountDevSticker } from "./dev-sticker.js";
-
-const committees = {
-  transport: {
-    title: "Transport", icon: "🚚", accent: "#57e8ff",
-    description: "Coordinates rides and gets everyone’s luggage to the cabin.",
-    members: []
-  },
-  lunch: {
-    title: "Lunch", icon: "🥪", accent: "#baef85",
-    description: "Plans lunch and makes sure there’s enough for everyone.",
-    members: [
-      { name: "Henrik Buck Christoffersen", photo: "crew/henrik.png", funFact: "har aldri stekt noe mistenkelig. Aldri.", scene: "grill" }
-    ]
-  },
-  party: {
-    title: "Party", icon: "🎉", accent: "#ff89dc",
-    description: "Runs the games, speeches and Saturday night program.",
-    members: []
-  },
-  development: {
-    title: "Sick Development", icon: "⚡", accent: "#ca9fff",
-    description: "Builds the site and the weekend’s digital surprises.",
-    members: [
-      { name: "Henning", video: "crew/henning.mp4", photo: "crew/henning.jpg", funFact: "digger skillpadder" },
-      { name: "Even", photo: "crew/even.jpg", funFact: "synes skillpadder er helt ok" }
-    ]
-  },
-  dinner: {
-    title: "Dinner", icon: "🍳", accent: "#ffc780",
-    description: "Plans the dinner menu, shops and runs the kitchen.",
-    members: []
-  },
-  bar: {
-    title: "Bar", icon: "🍻", accent: "#e9dc79",
-    description: "Keeps the bar stocked and the glasses full.",
-    members: []
-  }
-};
+import { createAdmin } from "./committee-admin.js";
 
 const team = new URLSearchParams(location.search).get("team");
+const committees = await fetch("committee-data.json").then(r => r.json());
+
 if (Object.hasOwn(committees, team)) {
-  const { title, icon, accent, description, members } = committees[team];
+  const { title, icon, accent, description, members: fallback } = committees[team];
   document.title = `${title} committee – Herman 30`;
   document.body.style.setProperty("--accent", accent);
   document.querySelector("h1").textContent = `${title} committee`;
@@ -49,11 +14,16 @@ if (Object.hasOwn(committees, team)) {
   const roster = document.getElementById("roster");
   roster.hidden = false;
 
-  if (members.length) {
-    const list = document.getElementById("members");
-    const template = document.getElementById("member-card");
-    for (const { name, photo, video, funFact, scene } of members) {
+  const list = document.getElementById("members");
+  const template = document.getElementById("member-card");
+  let members = fallback, admin = null;
+
+  function render() {
+    list.replaceChildren();
+    for (const member of members) {
+      const { name, photo, video, funFact, scene } = member;
       const card = template.content.cloneNode(true);
+      const li = card.querySelector("li");
       const image = card.querySelector("img");
       if (video) {
         const player = document.createElement("video");
@@ -64,8 +34,10 @@ if (Object.hasOwn(committees, team)) {
         player.src = video;
         player.setAttribute("aria-label", `${name}’s video`);
         image.replaceWith(player);
-      } else {
+      } else if (photo) {
         image.src = photo;
+      } else {
+        image.replaceWith(Object.assign(document.createElement("div"), { className: "no-photo", textContent: "📷" }));
       }
       const heading = card.querySelector("h3");
       if (scene === "grill") {
@@ -79,11 +51,28 @@ if (Object.hasOwn(committees, team)) {
         heading.textContent = name;
       }
       card.querySelector("span").textContent = funFact;
+      if (admin?.isAdmin() && member.id) admin.decorateCard(li, member);
       list.append(card);
     }
-    list.hidden = false;
-    document.getElementById("roster-empty").hidden = true;
+    if (admin?.isAdmin()) admin.addMemberCard(list);
+    const any = list.children.length > 0;
+    list.hidden = !any;
+    document.getElementById("roster-empty").hidden = any;
+    admin?.setNames(members);
   }
+
+  // Members come from the Worker's database; committee-data.json is the fallback (and the starting point).
+  try {
+    const res = await fetch(`/api/groups/${team}/members`);
+    if (res.ok) {
+      const data = await res.json();
+      members = data.members;
+      if (data.description) document.getElementById("committee-description").textContent = data.description;
+      admin = createAdmin(team, { title, onMembers: m => { if (m) members = m; render(); } });
+      admin.onChange(render);
+    }
+  } catch {}
+  render();
 
   if (team === "development") {
     document.body.classList.add("development");

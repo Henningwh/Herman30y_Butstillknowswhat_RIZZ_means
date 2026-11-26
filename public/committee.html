@@ -19,6 +19,10 @@
       <span class="committee-icon" aria-hidden="true"></span>
       <h1>Committee</h1>
       <p id="committee-description">Choose a committee from the Crew tab.</p>
+      <div class="row hero-actions">
+        <button type="button" id="admin-button" class="admin-toggle" hidden>🔒 Admin</button>
+        <button type="button" id="edit-description" class="admin-toggle" hidden>✏️ Edit description</button>
+      </div>
     </header>
 
     <section id="roster" hidden aria-labelledby="roster-title">
@@ -26,6 +30,36 @@
       <p id="roster-empty">The roster is coming soon.</p>
       <ul id="members" class="member-grid" hidden></ul>
     </section>
+
+    <section id="planner" hidden aria-labelledby="planner-title">
+      <h2 id="planner-title">🗓️ Activity planner</h2>
+      <p class="planner-sub">Only visible to this committee's admins. Drag notes between days, or use ◀ ▶.</p>
+      <form id="planner-form" class="planner-form">
+        <input name="title" maxlength="120" required placeholder="What needs doing? e.g. Buy bread for lunch">
+        <textarea name="details" maxlength="1000" rows="2" placeholder="Details (optional)"></textarea>
+        <div class="row">
+          <label>Day<select name="day"></select></label>
+          <label>Time<input name="time" type="time"></label>
+          <label>Who<select name="who"></select></label>
+        </div>
+        <div class="row">
+          <div class="swatches" role="radiogroup" aria-label="Colour"></div>
+          <button class="admin-btn primary">Add to planner</button>
+          <button type="button" class="admin-btn" data-act="cancel-edit" hidden>Cancel</button>
+        </div>
+      </form>
+      <div id="planner-board" class="planner-board"></div>
+    </section>
+
+    <dialog id="pin-dialog" class="pin-dialog">
+      <form id="pin-form" class="pin-box">
+        <h2 id="pin-title">Admin</h2>
+        <p>Enter the committee's 4-digit PIN.</p>
+        <input id="pin-input" inputmode="numeric" autocomplete="one-time-code" maxlength="4" pattern="[0-9]*" aria-label="PIN">
+        <p id="pin-error" class="pin-error" role="alert"></p>
+        <div class="row"><button class="admin-btn primary">Unlock</button><button type="button" class="admin-btn" id="pin-cancel">Cancel</button></div>
+      </form>
+    </dialog>
 
     <template id="development-art">
       <div class="reactor">
@@ -50,7 +84,7 @@
     <template id="member-card">
       <li class="member-card">
         <img loading="lazy" alt="">
-        <div>
+        <div class="member-text">
           <h3></h3>
           <p><strong>Fun fact</strong> <span></span></p>
         </div>

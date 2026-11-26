@@ -1,3 +1,5 @@
+export { GroupStore } from "./store.js";
+
 // Cloudflare Worker: serves the static site (via the ASSETS binding) and one tiny endpoint,
 // /api/songs/list, that reads the songs on the trip playlist.
 //
@@ -114,6 +116,10 @@ export default {
       try { tracks = await readPlaylist(env, log); } catch {}
       return json({ playlist: env.SPOTIFY_PLAYLIST_ID, ok: Boolean(tracks), found: tracks?.length || 0, first: tracks?.slice(0, 3), log },
                   200, { "cache-control": "no-store" });
+    }
+    if (url.pathname.startsWith("/api/groups/") || url.pathname.startsWith("/api/photos/")) {
+      // Committee members, photos, planner and admin PINs live in one Durable Object.
+      return env.GROUPS.get(env.GROUPS.idFromName("main")).fetch(req);
     }
     if (url.pathname.startsWith("/api/")) return json({ error: "not found" }, 404);
     return env.ASSETS.fetch(req);

@@ -64,9 +64,9 @@ test("rizz page has the chicken game to escape", () => {
 });
 
 test("Henrik's name in the lunch committee plays the grill scene", () => {
-  const js = readFileSync("public/committee.js", "utf8");
-  assert.match(js, /Henrik Buck Christoffersen[^\n]*scene: "grill"/);
-  assert.match(js, /grill-scene\.js/);
+  const henrik = JSON.parse(readFileSync("public/committee-data.json", "utf8")).lunch.members.find(m => m.name === "Henrik Buck Christoffersen");
+  assert.equal(henrik.scene, "grill");
+  assert.match(readFileSync("public/committee.js", "utf8"), /grill-scene\.js/);
   for (const f of ["henrik-top", "henrik-jaw", "herman-top", "herman-jaw"]) {
     assert.ok(readFileSync(`public/crew/${f}.png`).length > 1000, f);
   }

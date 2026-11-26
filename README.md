@@ -19,6 +19,16 @@ npx wrangler dev           # local preview
 embed page – no Spotify login or API keys. The playlist ID lives in `wrangler.jsonc` (`SPOTIFY_PLAYLIST_ID`).
 People add songs with the "Open in Spotify & add songs" button (the playlist's collaborative invite link).
 
+## Committee admin (PINs)
+
+Each committee page has a **🔒 Admin** button. Entering that committee's PIN lets you change member photos,
+names and fun facts, add/remove members, edit the committee description, and use a private activity planner.
+PINs live in `src/pins.js` (they stay the same across deploys). Wrong PINs are rate-limited.
+
+Everything admins change is stored in a Durable Object (`GroupStore`, SQLite) that Cloudflare creates on deploy –
+no dashboard setup, and the data survives redeploys. `public/committee-data.json` is only the starting point:
+each committee's members are copied from it the first time that committee is opened.
+
 ## Deploy
 
 Cloudflare Workers Builds deploys this repo. No API token is stored in the repo or on GitHub.

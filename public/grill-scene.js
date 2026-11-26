@@ -83,13 +83,15 @@ const MARKUP = `
   <g><polygon class="flame" points="284,282 290,270 296,282" fill="#3fa9ff"/><polygon class="flame" points="296,282 302,266 308,282" fill="#ff9d2e"/>
      <polygon class="flame" points="308,282 314,270 320,282" fill="#3fa9ff"/></g>
   <g filter="url(#g-cut)">
-    <rect x="344" y="275" width="58" height="7" rx="3" fill="#1d1d1d"/>
-    <ellipse cx="302" cy="280" rx="48" ry="10" fill="#2d2d2d"/><ellipse cx="302" cy="278" rx="42" ry="7" fill="#454545"/>
+    <rect x="252" y="246" width="12" height="7" rx="3" fill="#6d737a"/><rect x="340" y="246" width="12" height="7" rx="3" fill="#6d737a"/>
+    <path d="M262,240 H342 V276 Q342,282 336,282 H268 Q262,282 262,276 Z" fill="#8d949b"/>
+    <rect x="258" y="234" width="88" height="8" rx="4" fill="#b4bac1"/>
+    <ellipse cx="302" cy="239" rx="40" ry="5" fill="#8fd3ff"/>
   </g>
   <g fill="#fff" opacity=".85">
-    <path class="steam" d="M286,262 q-6,-10 0,-20 q6,-10 0,-20" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round"/>
-    <path class="steam" d="M302,260 q-6,-10 0,-20 q6,-10 0,-20" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round"/>
-    <path class="steam" d="M318,262 q-6,-10 0,-20 q6,-10 0,-20" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path class="steam" d="M286,228 q-6,-10 0,-20 q6,-10 0,-20" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path class="steam" d="M302,226 q-6,-10 0,-20 q6,-10 0,-20" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path class="steam" d="M318,228 q-6,-10 0,-20 q6,-10 0,-20" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round"/>
   </g>
 
   <!-- Henrik (feet at 0,0) -->
@@ -105,8 +107,8 @@ const MARKUP = `
         <polyline id="g-h-arm" points="-46,-84 -78,-96 -100,-108"/><polyline points="46,-84 60,-40"/>
       </g>
       <g id="g-spatula">
-        <line x1="-100" y1="-108" x2="-124" y2="-118" stroke="#3a2a1a" stroke-width="5" stroke-linecap="round"/>
-        <rect x="-138" y="-126" width="18" height="12" rx="2" fill="#9aa0a6" transform="rotate(22 -129 -120)"/>
+        <line x1="-100" y1="-108" x2="-114" y2="-172" stroke="#c08a4f" stroke-width="5" stroke-linecap="round"/>
+        <ellipse cx="-115" cy="-176" rx="6" ry="9" fill="#c08a4f"/>
         <circle cx="-100" cy="-108" r="9" fill="#f2c6ad"/>
       </g>
       <circle cx="60" cy="-36" r="9" fill="#f2c6ad"/>
@@ -149,10 +151,10 @@ const MARKUP = `
 
   <!-- sausages (on top so they can fly) -->
   <g id="g-sausages" filter="url(#g-cut)">
-    <use href="#g-sausage" class="g-s" style="transform: translate(282px, 275px)"/>
-    <use href="#g-sausage" class="g-s" style="transform: translate(296px, 272px)"/>
-    <use href="#g-sausage" class="g-s" style="transform: translate(310px, 276px)"/>
-    <use href="#g-sausage" class="g-s" style="transform: translate(324px, 273px)"/>
+    <use href="#g-sausage" class="g-s" style="transform: translate(282px, 236px) rotate(-70deg)"/>
+    <use href="#g-sausage" class="g-s" style="transform: translate(296px, 232px) rotate(-82deg)"/>
+    <use href="#g-sausage" class="g-s" style="transform: translate(310px, 234px) rotate(76deg)"/>
+    <use href="#g-sausage" class="g-s" style="transform: translate(324px, 237px) rotate(64deg)"/>
   </g>
 
   <text id="g-bang" x="404" y="118" text-anchor="middle" font-family="Unbounded, sans-serif" font-weight="900" font-size="64" fill="#e3132f" stroke="#111" stroke-width="3" opacity="0">!</text>
@@ -162,13 +164,13 @@ const MARKUP = `
     <rect x="300" y="40" width="210" height="58" rx="16" fill="#fff" stroke="#111" stroke-width="3"/>
     <polygon points="384,96 404,96 396,116" fill="#fff" stroke="#111" stroke-width="3" stroke-linejoin="round"/><rect x="382" y="92" width="24" height="6" fill="#fff"/>
     <text font-family="Unbounded, sans-serif" font-weight="800" font-size="14" text-anchor="middle" fill="#111">
-      <tspan x="405" y="64">Mmm… Gilde</tspan><tspan x="405" y="85">grillpølser 🤤</tspan></text>
+      <tspan x="405" y="64">Mmm… kokte Gilde</tspan><tspan x="405" y="85">grillpølser 🤤</tspan></text>
   </g>
   <g id="g-b2" opacity="0" filter="url(#g-cut)">
     <rect x="452" y="12" width="236" height="84" rx="16" fill="#ffd23f" stroke="#111" stroke-width="3"/>
     <polygon points="606,94 626,94 612,116" fill="#ffd23f" stroke="#111" stroke-width="3" stroke-linejoin="round"/><rect x="604" y="90" width="24" height="6" fill="#ffd23f"/>
     <text font-family="Unbounded, sans-serif" font-weight="900" font-size="14" text-anchor="middle" fill="#111">
-      <tspan x="570" y="38">HENRIK?!</tspan><tspan x="570" y="60">Are those GILDE</tspan><tspan x="570" y="82">grillpølser?!</tspan></text>
+      <tspan x="570" y="38">HENRIK?! KOKER</tspan><tspan x="570" y="60">du GILDE</tspan><tspan x="570" y="82">grillpølser?!</tspan></text>
   </g>
   <g id="g-b3" opacity="0" filter="url(#g-cut)">
     <rect x="262" y="40" width="226" height="58" rx="16" fill="#fff" stroke="#111" stroke-width="3"/>
@@ -219,13 +221,10 @@ export async function playGrillScene() {
 
   // 1. Henrik happily frying
   const sausages = [...root.querySelectorAll(".g-s")];
-  const home = [[282, 275], [296, 272], [310, 276], [324, 273]];
-  a($("g-spatula"), hold("rotate(0deg)", "rotate(-10deg)"), { duration: 300, iterations: 6, fill: "none" });
-  sausages.forEach((s, k) => a(s, [
-    { transform: P(...home[k]), offset: 0 }, { transform: P(...home[k]), offset: .35 },
-    { transform: P(home[k][0], home[k][1] - 26, 90), offset: .45 }, { transform: P(home[k][0], home[k][1] - 26, 90), offset: .55 },
-    { transform: P(...home[k], 180), offset: .65 }, { transform: P(...home[k], 180), offset: 1 }],
-    { duration: 900, delay: 200 + k * 40, easing: "linear", fill: "none" }));
+  const home = [[282, 236, -70], [296, 232, -82], [310, 234, 76], [324, 237, 64]];
+  a($("g-spatula"), hold("rotate(0deg)", "rotate(-8deg)"), { duration: 300, iterations: 6, fill: "none" });
+  sausages.forEach((s, k) => a(s, hold(P(...home[k]), P(home[k][0], home[k][1] - 7, home[k][2] + 12)),
+    { duration: 260, delay: k * 65, iterations: 7, fill: "none" }));
   showFor($("g-b1"), 900, 900);
   flap($("g-h-top"), 900, 4);
 
@@ -235,7 +234,7 @@ export async function playGrillScene() {
   a($("g-herman"), [{ transform: P(700, 400) }, { transform: P(600, 400) }], { delay: 1850, duration: 600, easing: "steps(5)" });
   a($("g-m-in"), hold("translateY(0) rotate(-5deg)", "translateY(-10px) rotate(5deg)"), { delay: 1850, duration: 240, iterations: 2.5, fill: "none" });
 
-  // 3. "HENRIK?! Are those GILDE grillpølser?!" – point and flap
+  // 3. "HENRIK?! KOKER du GILDE grillpølser?!" – point and flap
   unpop($("g-m-arm-down"), 2500); unpop($("g-m-hand-down"), 2500);
   pop($("g-m-arm-point"), 2500); pop($("g-m-hand-point"), 2500);
   showFor($("g-b2"), 2500, 1350);
