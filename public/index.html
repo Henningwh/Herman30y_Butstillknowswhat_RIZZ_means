@@ -101,24 +101,60 @@
   @keyframes eq { 0%, 100% { height: 30%; } 50% { height: 100%; } }
 
 
-  /* ---------- Tracklist read from the playlist ---------- */
-  .tracklist[hidden] { display: none; }
-  .tracklist { margin-bottom: 16px; }
-  .tracklist h3 { font-size: 18px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
-  .tracklist h3 small { font: 600 13px "Inter"; color: var(--muted); }
-  .tracks { list-style: none; margin: 0; padding: 0; counter-reset: tr; max-height: 460px; overflow-y: auto; scrollbar-width: thin; }
-  .tracks li { counter-increment: tr; display: flex; align-items: center; gap: 12px; padding: 8px 6px; border-radius: 12px; }
-  .tracks li:hover { background: rgba(255,255,255,.05); }
-  .tracks li::before { content: counter(tr); width: 22px; flex: none; text-align: right; color: var(--muted);
-                       font: 600 13px "Unbounded"; font-variant-numeric: tabular-nums; }
-  .tracks img { width: 44px; height: 44px; border-radius: 6px; flex: none; background: #222; }
-  .tracks .meta { min-width: 0; flex: 1; }
-  .tracks .meta a, .tracks .meta span { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .tracks .meta a { color: var(--ink); font-weight: 700; text-decoration: none; }
-  .tracks .meta a:hover { color: var(--c1); }
-  .tracks .meta span { color: var(--muted); font-size: 14px; }
-  .tracks .dur { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; flex: none; }
-  .tracks li.fresh { background: linear-gradient(90deg, rgba(57,255,20,.18), transparent); }
+  /* ---------- Spotify-style playlist widget ---------- */
+  .spot[hidden] { display: none; }
+  .spot { --sp-green: #1ed760; --sp-bg: #121212; --sp-row: #ffffff12; --sp-sub: #b3b3b3;
+          margin-bottom: 16px; border-radius: 14px; overflow: hidden; background: var(--sp-bg); color: #fff;
+          font-family: "Inter", "Helvetica Neue", Arial, sans-serif; box-shadow: 0 18px 50px #0008; }
+  .spot-head { display: flex; gap: 20px; align-items: flex-end; padding: 22px 22px 18px;
+               background: linear-gradient(180deg, var(--sp-tint, #5b3a8f) 0%, color-mix(in srgb, var(--sp-tint, #5b3a8f) 45%, #121212) 70%, #121212 100%); }
+  .spot-cover { width: clamp(108px, 22vw, 176px); aspect-ratio: 1; flex: none; border-radius: 6px; overflow: hidden;
+                box-shadow: 0 8px 30px #0009; background: #282828; display: grid; grid-template: 1fr 1fr / 1fr 1fr; }
+  .spot-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .spot-cover.one img { grid-area: 1 / 1 / 3 / 3; }
+  .spot-cover .ph { grid-area: 1 / 1 / 3 / 3; display: grid; place-items: center; font-size: 54px; color: #b3b3b3; }
+  .spot-meta { min-width: 0; }
+  .spot-kind { font-size: 12px; font-weight: 700; }
+  .spot-title { font: 900 clamp(28px, 6vw, 64px)/1.02 "Inter", sans-serif; letter-spacing: -.04em; margin: 6px 0 10px;
+                overflow-wrap: anywhere; background: none; -webkit-text-fill-color: currentColor; animation: none; }
+  .spot-sub { font-size: 13px; color: #fff; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .spot-sub .dot { color: var(--sp-sub); }
+  .spot-sub .muted { color: var(--sp-sub); }
+  .spot-logo { width: 22px; height: 22px; flex: none; }
+  .spot-bar { display: flex; align-items: center; gap: 22px; padding: 6px 22px 14px; }
+  .spot-play { width: 56px; height: 56px; border-radius: 50%; background: var(--sp-green); display: grid; place-items: center;
+               box-shadow: 0 8px 16px #0006; transition: transform .1s, background .1s; flex: none; }
+  .spot-play:hover { transform: scale(1.06); background: #3be477; }
+  .spot-play svg { width: 24px; height: 24px; fill: #000; margin-left: 3px; }
+  .spot-icon { color: var(--sp-sub); display: grid; }
+  .spot-icon svg { width: 30px; height: 30px; fill: currentColor; }
+  .spot-icon:hover { color: #fff; }
+  .spot-add { margin-left: auto; font-size: 13px; font-weight: 700; color: #fff; text-decoration: none; border: 1px solid #727272;
+              border-radius: 999px; padding: 7px 14px; white-space: nowrap; }
+  .spot-add:hover { border-color: #fff; transform: scale(1.03); }
+  .spot-cols, .spot-row { display: grid; grid-template-columns: 28px minmax(0, 1fr) 56px; gap: 14px; align-items: center; padding: 0 16px; }
+  .spot-cols { margin: 0 6px; height: 36px; border-bottom: 1px solid #ffffff1a; color: var(--sp-sub); font-size: 13px; }
+  .spot-cols span:first-child, .spot-row .n { text-align: right; }
+  .spot-cols svg { width: 16px; height: 16px; fill: currentColor; justify-self: end; margin-right: 6px; }
+  .spot-list { list-style: none; margin: 8px 6px 10px; padding: 0; max-height: 520px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #555 transparent; }
+  .spot-row { height: 56px; border-radius: 4px; color: var(--sp-sub); text-decoration: none; font-size: 14px; }
+  .spot-row:hover { background: var(--sp-row); }
+  .spot-row .n { font-variant-numeric: tabular-nums; position: relative; }
+  .spot-row .n svg { display: none; width: 14px; height: 14px; fill: #fff; position: absolute; right: 0; top: 50%; translate: 0 -50%; }
+  .spot-row:hover .n span { visibility: hidden; }
+  .spot-row:hover .n svg { display: block; }
+  .spot-row .t { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .spot-row .t img, .spot-row .t .noimg { width: 40px; height: 40px; border-radius: 4px; flex: none; object-fit: cover; background: #282828; }
+  .spot-row .t .noimg { display: grid; place-items: center; font-size: 16px; }
+  .spot-row .t div { min-width: 0; }
+  .spot-row .t b { display: block; color: #fff; font-weight: 500; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .spot-row .t small { display: block; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .spot-row:hover .t small { color: #fff; }
+  .spot-row .d { text-align: right; font-variant-numeric: tabular-nums; font-size: 13px; }
+  .spot-empty { padding: 20px 22px 26px; color: var(--sp-sub); }
+  .spot-row.new { animation: spot-new 1.6s ease-out; }
+  @keyframes spot-new { from { background: #1ed76040; } }
+  @media (max-width: 520px) { .spot-head { flex-direction: column; align-items: flex-start; } .spot-add { padding: 6px 10px; } }
 
   /* ---------- Committees ---------- */
   .committee { transition: transform .25s, border-color .25s, box-shadow .25s; overflow: hidden; }
@@ -300,9 +336,25 @@
         <h2>Music</h2>
         <p>One shared playlist. Everyone can add. Bangers only.</p>
       </header>
-      <div class="card tracklist r" id="tracklist" hidden>
-        <h3>🎶 On the playlist <small id="track-count"></small></h3>
-        <ol class="tracks" id="tracks"></ol>
+      <div class="spot r" id="tracklist" hidden>
+        <header class="spot-head">
+          <div class="spot-cover" id="spot-cover"><span class="ph">♫</span></div>
+          <div class="spot-meta">
+            <div class="spot-kind">Public Playlist</div>
+            <h3 class="spot-title" id="spot-title">Herman 30</h3>
+            <div class="spot-sub">
+              <svg class="spot-logo" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="12" fill="#1ed760"/><path d="M17.5 16.6a.75.75 0 0 1-1 .25c-2.8-1.7-6.4-2.1-10.5-1.2a.75.75 0 1 1-.33-1.46c4.5-1 8.4-.6 11.6 1.4.35.2.46.66.24 1Zm1.47-3.27a.94.94 0 0 1-1.3.3c-3.2-2-8.1-2.55-11.9-1.4a.94.94 0 1 1-.54-1.8c4.3-1.3 9.7-.66 13.4 1.6.44.27.58.85.32 1.3Zm.13-3.4C15.3 7.7 9 7.5 5.4 8.6a1.13 1.13 0 1 1-.66-2.16C8.9 5.2 15.8 5.4 20.2 8a1.13 1.13 0 0 1-1.15 1.95Z" fill="#000"/></svg>
+              <b id="spot-owner">Herman 30 crew</b><span class="dot">•</span><span id="spot-count">0 songs</span><span class="dot muted">•</span><span class="muted" id="spot-length"></span>
+            </div>
+          </div>
+        </header>
+        <div class="spot-bar">
+          <a class="spot-play" id="spot-play" target="_blank" rel="noopener" aria-label="Play on Spotify"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l13-7.5z"/></svg></a>
+          <a class="spot-icon" id="spot-shuffle" target="_blank" rel="noopener" aria-label="Shuffle on Spotify"><svg viewBox="0 0 24 24"><path d="M17.5 3.5 21 7l-3.5 3.5V8h-1.6a3 3 0 0 0-2.5 1.34l-4.6 6.9A5 5 0 0 1 4.6 18.5H3v-2h1.6a3 3 0 0 0 2.5-1.34l4.6-6.9A5 5 0 0 1 15.9 6h1.6V3.5ZM3 6h1.6a5 5 0 0 1 4 2l-1.2 1.7A3 3 0 0 0 4.6 8H3V6Zm11.2 9.3 1.2-1.75A3 3 0 0 0 15.9 16h1.6v-2.5L21 17l-3.5 3.5V18h-1.6a5 5 0 0 1-1.7-.3Z"/></svg></a>
+          <a class="spot-add" href="https://open.spotify.com/playlist/1KjXqBlUZ7ygePQzqCVNVn?si=5df037698fed4dd4&amp;pt=51a08893a253d85736e973c6d2f7d90c" target="_blank" rel="noopener">+ Add songs</a>
+        </div>
+        <div class="spot-cols"><span>#</span><span>Title</span><svg viewBox="0 0 16 16" aria-label="Duration"><path d="M8 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Z"/><path d="M8 3.25a.75.75 0 0 1 .75.75v3.25H11a.75.75 0 0 1 0 1.5H7.25V4A.75.75 0 0 1 8 3.25Z"/></svg></div>
+        <ol class="spot-list" id="tracks"></ol>
       </div>
       <div class="card music-card r">
         <a class="btn" href="https://open.spotify.com/playlist/1KjXqBlUZ7ygePQzqCVNVn?si=5df037698fed4dd4&amp;pt=51a08893a253d85736e973c6d2f7d90c" id="playlist-link" target="_blank" rel="noopener"><span class="eq"><i></i><i></i><i></i></span> Open in Spotify &amp; add songs →</a>
@@ -703,6 +755,13 @@
     if (reduce || cur < 0 || i === cur) return showFromHash(i);
     const requestedHash = location.hash;
     busy = true; fx.classList.add("busy");
+    if (ids[i] === "home") {
+      // Front page: Herman with gatling guns (public/gatling.js)
+      try { await (await import("./gatling.js")).playGatling(() => show(i)); } catch { show(i); }
+      busy = false; fx.classList.remove("busy");
+      if (location.hash.slice(1) !== ids[cur]) go(ids.indexOf(location.hash.slice(1)));
+      return;
+    }
     if (ids[i] === "music") {
       await chairHeist(() => show(i));
       busy = false; fx.classList.remove("busy");
@@ -807,26 +866,68 @@
   });
 
 
-  // ---------- Tracklist: songs read from the public playlist (via /api/songs/list on the Worker) ----------
+  // ---------- Spotify-style playlist widget: songs read from the public playlist (/api/songs/list) ----------
   (async () => {
-    const card = document.getElementById("tracklist"), list = document.getElementById("tracks"), count = document.getElementById("track-count");
-    const esc = t => String(t).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+    const card = document.getElementById("tracklist"), list = document.getElementById("tracks");
+    const $ = id => document.getElementById(id);
+    const esc = t => String(t ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
     const fmt = ms => `${Math.floor(ms / 60000)}:${String(Math.floor(ms / 1000) % 60).padStart(2, "0")}`;
-    let tracks;
-    try { ({ tracks } = await fetch("/api/songs/list").then(r => r.json())); } catch {}
-    card.hidden = false;
-    if (!Array.isArray(tracks)) {         // couldn't read it: the Spotify player below still works
-      list.innerHTML = `<li style="color:var(--muted)">Couldn't load the song list right now – the player below has it.</li>`;
-      return;
+    const total = ms => { const m = Math.round(ms / 60000); return m >= 60 ? `${Math.floor(m / 60)} hr ${m % 60} min` : `${m} min`; };
+    const playIcon = '<svg viewBox="0 0 24 24"><path d="M7 4.5v15l13-7.5z"/></svg>';
+    let seen = null;
+
+    async function load() {
+      let data;
+      try { data = await fetch("/api/songs/list").then(r => r.json()); } catch {}
+      card.hidden = false;
+      const tracks = data && Array.isArray(data.tracks) ? data.tracks : null;
+      if (!tracks) {
+        list.innerHTML = `<li class="spot-empty">Couldn't load the songs right now – the player below has them.</li>`;
+        return;
+      }
+      const pl = data.playlist || {};
+      const plUrl = `https://open.spotify.com/playlist/${pl.id || "1KjXqBlUZ7ygePQzqCVNVn"}`;
+      $("spot-play").href = plUrl; $("spot-shuffle").href = plUrl;
+      if (pl.name) $("spot-title").textContent = pl.name;
+      if (pl.owner) $("spot-owner").textContent = pl.owner;
+      $("spot-count").textContent = `${tracks.length} song${tracks.length === 1 ? "" : "s"}`;
+      const ms = tracks.reduce((n, t) => n + (t.ms || 0), 0);
+      $("spot-length").textContent = ms ? total(ms) : "";
+      // Cover: the playlist's own cover, else a 2x2 mosaic of album art like Spotify does
+      const arts = [...new Set(tracks.map(t => t.image).filter(Boolean))];
+      const cover = $("spot-cover");
+      if (pl.cover) { cover.className = "spot-cover one"; cover.innerHTML = `<img src="${esc(pl.cover)}" alt="">`; }
+      else if (arts.length >= 4) { cover.className = "spot-cover"; cover.innerHTML = arts.slice(0, 4).map(u => `<img src="${esc(u)}" alt="">`).join(""); }
+      else if (arts.length) { cover.className = "spot-cover one"; cover.innerHTML = `<img src="${esc(arts[0])}" alt="">`; }
+      // Header tint from the cover's average colour (Spotify-ish); silently skipped if the image blocks reading pixels
+      const first = cover.querySelector("img");
+      if (first) {
+        const probe = new Image();          // separate copy so the visible cover never depends on CORS
+        probe.crossOrigin = "anonymous";
+        probe.src = first.src;
+        probe.addEventListener("load", () => {
+          try {
+            const c = document.createElement("canvas"); c.width = c.height = 8;
+            const g = c.getContext("2d"); g.drawImage(probe, 0, 0, 8, 8);
+            const d = g.getImageData(0, 0, 8, 8).data; let r = 0, gg = 0, b = 0;
+            for (let i = 0; i < d.length; i += 4) { r += d[i]; gg += d[i + 1]; b += d[i + 2]; }
+            const n = d.length / 4;
+            card.style.setProperty("--sp-tint", `rgb(${Math.round(r / n * .8)}, ${Math.round(gg / n * .8)}, ${Math.round(b / n * .8)})`);
+          } catch {}
+        }, { once: true });
+      }
+      const fresh = seen ? new Set(tracks.map(t => t.url).filter(u => !seen.has(u))) : new Set();
+      seen = new Set(tracks.map(t => t.url));
+      list.innerHTML = tracks.length ? tracks.map((t, k) => `<li><a class="spot-row${fresh.has(t.url) ? " new" : ""}" href="${esc(t.url || plUrl)}" target="_blank" rel="noopener">
+          <span class="n"><span>${k + 1}</span>${playIcon}</span>
+          <span class="t">${t.image ? `<img src="${esc(t.image)}" alt="" loading="lazy">` : `<span class="noimg">♪</span>`}
+            <div><b>${esc(t.name)}</b><small>${esc(t.artists)}</small></div></span>
+          <span class="d">${t.ms ? fmt(t.ms) : ""}</span></a></li>`).join("")
+        : `<li class="spot-empty">It's quiet in here. Hit “+ Add songs” and drop a banger.</li>`;
     }
-    count.textContent = `${tracks.length} song${tracks.length === 1 ? "" : "s"}`;
-    list.innerHTML = tracks.length ? tracks.map(t => `<li>
-        <div class="meta">${t.url ? `<a href="${esc(t.url)}" target="_blank" rel="noopener">${esc(t.name)}</a>` : `<a>${esc(t.name)}</a>`}<span>${esc(t.artists)}</span></div>
-        <span class="dur">${t.ms ? fmt(t.ms) : ""}</span></li>`).join("")
-      : `<li style="color:var(--muted)">Empty so far – be the first to add a banger.</li>`;
-    list.querySelectorAll("li").forEach((li, k) => li.animate(
-      [{ opacity: 0, transform: "translateX(-16px)" }, { opacity: 1, transform: "none" }],
-      { duration: 350, delay: Math.min(k, 12) * 35, easing: "ease-out", fill: "backwards" }));
+    await load();
+    // keep it fresh while the Music pane is open
+    setInterval(() => { if (!document.hidden && document.getElementById("music").classList.contains("active")) load(); }, 60000);
   })();
 
   // ---------- Idle easter egg: after 1 minute without input, the rizz page takes over ----------

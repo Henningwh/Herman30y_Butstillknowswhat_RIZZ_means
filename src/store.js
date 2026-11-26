@@ -42,6 +42,7 @@ export class GroupStore {
         photo TEXT NOT NULL DEFAULT '', video TEXT NOT NULL DEFAULT '', scene TEXT NOT NULL DEFAULT '', sort INTEGER NOT NULL DEFAULT 0);
       CREATE TABLE IF NOT EXISTS seeded (grp TEXT PRIMARY KEY);
       CREATE TABLE IF NOT EXISTS info (grp TEXT PRIMARY KEY, description TEXT NOT NULL);
+      CREATE TABLE IF NOT EXISTS thumbs (id TEXT PRIMARY KEY, url TEXT NOT NULL);
       CREATE TABLE IF NOT EXISTS photos (id TEXT PRIMARY KEY, type TEXT NOT NULL, data BLOB NOT NULL);
       CREATE TABLE IF NOT EXISTS notes (id TEXT PRIMARY KEY, grp TEXT NOT NULL, title TEXT NOT NULL, details TEXT NOT NULL DEFAULT '',
         day TEXT NOT NULL DEFAULT 'before', time TEXT NOT NULL DEFAULT '', who TEXT NOT NULL DEFAULT '', color TEXT NOT NULL DEFAULT 'yellow',
@@ -132,6 +133,23 @@ export class GroupStore {
       const p = this.rows("SELECT type, data FROM photos WHERE id = ?", parts[2])[0];
       if (!p) return bad("not found", 404);
       return new Response(p.data, { headers: { "content-type": p.type, "cache-control": "public, max-age=31536000, immutable" } });
+    }
+
+    // Internal (only the Worker calls this; not routed from outside): Spotify album-art cache.
+    if (parts[1] === "internal" && parts[2] === "thumbs") {
+      const body = await req.json().catch(() => ({}));
+      if (method === "POST") {
+        const ids = (Array.isArray(body.ids) ? body.ids : []).filter(id => /^[A-Za-z0-9]{22}$/.test(id)).slice(0, 200);
+        const out = {};
+        for (const id of ids) { const r = this.rows("SELECT url FROM thumbs WHERE id = ?", id)[0]; if (r) out[id] = r.url; }
+        return json(out);
+      }
+      if (method === "PUT") {
+        for (const [id, url] of Object.entries(body)) {
+          if (/^[A-Za-z0-9]{22}$/.test(id) && /^https:\/\/[^\s"']+$/.test(url)) this.sql.exec("INSERT OR REPLACE INTO thumbs (id, url) VALUES (?, ?)", id, url);
+        }
+        return json({ ok: true });
+      }
     }
 
     if (parts[1] !== "groups" || !parts[2]) return bad("not found", 404);

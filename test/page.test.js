@@ -72,3 +72,13 @@ test("Henrik's name in the lunch committee plays the grill scene", () => {
   }
   assert.match(readFileSync("public/grill-scene.js", "utf8"), /export async function playGrillScene/);
 });
+
+test("home transition is Herman with gatling guns", () => {
+  assert.match(html, /gatling\.js/);
+  assert.match(readFileSync("public/gatling.js", "utf8"), /export async function playGatling/);
+});
+
+test("music pane has the Spotify-style playlist widget", () => {
+  assert.match(html, /class="spot r" id="tracklist"/);
+  assert.match(html, /\/api\/songs\/list/);
+});

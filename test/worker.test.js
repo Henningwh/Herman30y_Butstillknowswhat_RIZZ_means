@@ -20,7 +20,7 @@ const call = path => worker.fetch(new Request("https://site.example" + path), en
 
 test("parses the track list out of the embed page", () => {
   assert.deepEqual(parseEmbed(sample)[0], {
-    name: "Dancing Queen", artists: "ABBA", ms: 231000, url: "https://open.spotify.com/track/" + "a".repeat(22),
+    id: "a".repeat(22), name: "Dancing Queen", artists: "ABBA", ms: 231000, url: "https://open.spotify.com/track/" + "a".repeat(22), image: "",
   });
 });
 
@@ -49,7 +49,7 @@ test("falls back to the playlist page's song list when the embed has no data", a
     return new Response(`<meta name="music:song" content="https://open.spotify.com/track/${tid}">`);
   };
   const { tracks } = await (await call("/api/songs/list")).json();
-  assert.deepEqual(tracks, [{ name: "Levels", artists: "", ms: 0, url: "https://open.spotify.com/track/" + tid }]);
+  assert.deepEqual(tracks, [{ id: tid, name: "Levels", artists: "", ms: 0, url: "https://open.spotify.com/track/" + tid, image: "" }]);
 });
 
 test("debug endpoint explains what happened", async () => {
@@ -57,4 +57,24 @@ test("debug endpoint explains what happened", async () => {
   assert.equal(d.ok, true);
   assert.equal(d.found, 2);
   assert.equal(d.log[0].hasNextData, true);
+});
+
+test("album art comes from oEmbed and is remembered in the store", async () => {
+  const saved = {};
+  const stub = { fetch: async (url, init) => {
+    const body = JSON.parse(init.body);
+    if (init.method === "PUT") { Object.assign(saved, body); return Response.json({ ok: true }); }
+    return Response.json(Object.fromEntries(body.ids.filter(id => saved[id]).map(id => [id, saved[id]])));
+  } };
+  const envT = { ...env, GROUPS: { idFromName: () => "x", get: () => stub } };
+  let oembeds = 0;
+  globalThis.fetch = async url => {
+    if (String(url).includes("/oembed")) { oembeds++; return Response.json({ thumbnail_url: "https://i.scdn.co/image/" + oembeds }); }
+    return new Response(sample);
+  };
+  const first = await (await worker.fetch(new Request("https://site.example/api/songs/list"), envT, ctx)).json();
+  assert.equal(first.tracks[0].image.startsWith("https://i.scdn.co/image/"), true);
+  assert.equal(oembeds, 2);
+  await worker.fetch(new Request("https://site.example/api/songs/list"), envT, ctx);
+  assert.equal(oembeds, 2, "thumbnails are not fetched again");
 });
