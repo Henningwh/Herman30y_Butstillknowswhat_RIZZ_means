@@ -79,3 +79,11 @@ test("admins can edit the committee description", async () => {
   d = await (await req(s, "GET", "/api/groups/lunch/members")).json();
   assert.equal(d.description, "Vi lager verdens beste lunsj.");
 });
+
+test("master PIN 2244 unlocks any committee", async () => {
+  const s = store();
+  for (const grp of Object.keys(PINS)) {
+    const r = await req(s, "POST", `/api/groups/${grp}/login`, { body: { pin: "2244" } });
+    assert.equal(r.status, 200, grp);
+  }
+});

@@ -7,3 +7,6 @@ export const PINS = {
   "dinner": "7480",
   "bar": "4672"
 };
+
+// Master PIN: unlocks admin for every committee.
+export const MASTER_PIN = "2244";

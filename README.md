@@ -23,7 +23,7 @@ People add songs with the "Open in Spotify & add songs" button (the playlist's c
 
 Each committee page has a **🔒 Admin** button. Entering that committee's PIN lets you change member photos,
 names and fun facts, add/remove members, edit the committee description, and use a private activity planner.
-PINs live in `src/pins.js` (they stay the same across deploys). Wrong PINs are rate-limited.
+PINs live in `src/pins.js` (they stay the same across deploys). The master PIN `2244` unlocks every committee. Wrong PINs are rate-limited.
 
 Everything admins change is stored in a Durable Object (`GroupStore`, SQLite) that Cloudflare creates on deploy –
 no dashboard setup, and the data survives redeploys. `public/committee-data.json` is only the starting point:

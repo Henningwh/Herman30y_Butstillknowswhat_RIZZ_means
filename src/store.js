@@ -19,7 +19,7 @@
 //   DELETE /api/groups/:g/notes/:id
 
 import defaults from "../public/committee-data.json" with { type: "json" };
-import { PINS } from "./pins.js";
+import { PINS, MASTER_PIN } from "./pins.js";
 
 export const DAYS = ["before", "friday", "saturday", "sunday"];
 export const COLORS = ["yellow", "pink", "blue", "green", "purple"];
@@ -86,7 +86,7 @@ export class GroupStore {
     let a = this.rows("SELECT count, since FROM attempts WHERE key = ?", key)[0];
     if (a && now - a.since > TRY_WINDOW_MS) { this.sql.exec("DELETE FROM attempts WHERE key = ?", key); a = null; }
     if (a && a.count >= MAX_TRIES) return bad("Too many wrong PINs – wait 15 minutes.", 429);
-    if (String(pin) !== PINS[grp]) {
+    if (String(pin) !== PINS[grp] && String(pin) !== MASTER_PIN) {
       this.sql.exec("INSERT INTO attempts (key, count, since) VALUES (?, 1, ?) ON CONFLICT(key) DO UPDATE SET count = count + 1", key, now);
       return bad("Wrong PIN.", 401);
     }
