@@ -761,7 +761,8 @@
 
   async function go(i) {
     if (busy) return;
-    if (reduce || cur < 0 || i === cur) return showFromHash(i);
+    const enteringCrew = ids[i] === "committees";
+    if (reduce || i === cur || (cur < 0 && !enteringCrew)) return showFromHash(i);
     const requestedHash = location.hash;
     busy = true; fx.classList.add("busy");
     if (ids[i] === "home") {
@@ -771,7 +772,7 @@
       if (location.hash.slice(1) !== ids[cur]) go(ids.indexOf(location.hash.slice(1)));
       return;
     }
-    if (ids[i] === "committees") {
+    if (enteringCrew) {
       try {
         const { playCrewSunset } = await import("./crew-sunset.js");
         await playCrewSunset(() => showFromHash(i));
@@ -840,7 +841,7 @@
     const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
     if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.5 && !e.target.closest("iframe, video")) nav(cur + (dx < 0 ? 1 : -1));
   }, { passive: true });
-  showFromHash(fromHash());
+  go(fromHash());
 
   // ---------- Countdown ----------
   const cd = document.getElementById("countdown");

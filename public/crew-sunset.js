@@ -6,7 +6,7 @@ export async function playCrewSunset(swap) {
   try {
     ready = await Promise.race([
       Promise.all(portraits.map(image => image.decode())).then(() => true),
-      new Promise(resolve => { deadline = setTimeout(() => resolve(false), 450); })
+      new Promise(resolve => { deadline = setTimeout(() => resolve(false), 1600); })
     ]);
   } catch {
     ready = false;
